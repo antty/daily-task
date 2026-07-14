@@ -2,6 +2,40 @@
 
 一个无构建步骤的响应式任务管理前端。可添加/删除单次、每日、每周任务，按成员、类型、状态、日期范围筛选，并在月历中查看每天的完成进度。
 
+## 系统架构
+
+```mermaid
+flowchart TB
+  User[家庭成员] --> Browser[浏览器：日常任务应用]
+  Pages[GitHub Pages\n静态网站托管] --> Browser
+
+  subgraph Frontend[前端模块]
+    App[app.js\n视图与交互]
+    Domain[task-domain.js\n日程与日历计算]
+    Store[supabase-store.js\n本地缓存与云端同步]
+    Config[supabase-config.js\n项目公开配置]
+    App --> Domain
+    App --> Store
+    Store --> Config
+  end
+
+  Browser --> App
+  Store --> Cache[(浏览器 localStorage\n离线缓存)]
+
+  subgraph Supabase[Supabase]
+    Auth[Anonymous Auth\n匿名身份]
+    DB[(Postgres\n家庭、成员、任务、完成记录)]
+    Storage[Storage：task-media\n头像与完成照片]
+    RLS[RLS 权限策略]
+    Auth --> DB
+    DB --- RLS
+  end
+
+  Store --> Auth
+  Store --> DB
+  Store --> Storage
+```
+
 ## 本地运行
 
 在项目目录执行：
