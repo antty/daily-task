@@ -6,6 +6,7 @@ const supabase = createClient(supabaseConfig.url, supabaseConfig.publishableKey)
 const colors = ['#6750a4', '#ec6d8c', '#377d70', '#c2733c', '#3f7cac', '#2e8b72'];
 const write = async (request) => { const { error } = await request; if (error) throw error; };
 const householdKey = 'daily-task-active-household';
+const joinedHouseholdKey = 'daily-task-joined-household';
 const createInviteCode = () => Array.from(crypto.getRandomValues(new Uint32Array(8)), (value) => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[value % 32]).join('');
 
 const asDataUrlFile = async (value, name, householdId) => {
@@ -39,6 +40,7 @@ export function createSupabaseStore() {
     const { data: preferred } = preferredId ? await supabase.from('households').select('id, invite_code').eq('id', preferredId).maybeSingle() : { data: null };
     const { data: households, error: householdError } = await supabase.from('households').select('id, invite_code').eq('owner_id', userId).limit(1);
     if (householdError) throw householdError;
+    if (preferred && !households.some((household) => household.id === preferred.id)) localStorage.setItem(joinedHouseholdKey, preferred.id);
     if (preferred) { householdId = preferred.id; inviteCode = preferred.invite_code; }
     else if (households.length) { householdId = households[0].id; inviteCode = households[0].invite_code; }
     else {
@@ -103,7 +105,8 @@ export function createSupabaseStore() {
     ready,
     getConnectionError: () => readyError,
     getInviteCode: () => inviteCode,
-    joinHousehold(invite) { return ready.then(async () => { const { data, error } = await supabase.rpc('join_household_by_invite', { invite_code: String(invite).trim().toUpperCase() }); if (error) throw error; householdId = data; localStorage.setItem(householdKey, householdId); const { data: household, error: householdError } = await supabase.from('households').select('invite_code').eq('id', householdId).single(); if (householdError) throw householdError; inviteCode = household.invite_code; local.replaceState(await loadRemote()); }); },
+    hasJoinedHousehold: () => localStorage.getItem(joinedHouseholdKey) === householdId,
+    joinHousehold(invite) { return ready.then(async () => { const { data, error } = await supabase.rpc('join_household_by_invite', { invite_code: String(invite).trim().toUpperCase() }); if (error) throw error; householdId = data; localStorage.setItem(householdKey, householdId); localStorage.setItem(joinedHouseholdKey, householdId); const { data: household, error: householdError } = await supabase.from('households').select('invite_code').eq('id', householdId).single(); if (householdError) throw householdError; inviteCode = household.invite_code; local.replaceState(await loadRemote()); }); },
     addTaskForMember(task, memberId) { local.addTaskForMember(task, memberId); const created = local.getState().tasks[0]; sync(() => write(supabase.from('tasks').insert({ id: created.id, household_id: householdId, title: created.title, description: created.description, type_id: created.typeId || null, member_id: memberId, start_date: created.startDate, recurrence: created.recurrence, weekdays: created.weekdays || [] }))); },
     updateTask(id, patch) { local.updateTask(id, patch); sync(() => write(supabase.from('tasks').update({ title: patch.title, description: patch.description, type_id: patch.typeId || null, start_date: patch.startDate, recurrence: patch.recurrence, weekdays: patch.weekdays || [] }).eq('id', id))); },
     deleteTask(id, scope, fromDate) { local.deleteTask(id, scope, fromDate); sync(async () => { if (scope === 'future') { const end = new Date(`${fromDate}T00:00:00`); end.setDate(end.getDate() - 1); await write(supabase.from('tasks').update({ end_date: end.toISOString().slice(0, 10) }).eq('id', id)); await write(supabase.from('task_completions').delete().eq('task_id', id).gte('occurrence_date', fromDate)); } else await write(supabase.from('tasks').delete().eq('id', id)); }); },

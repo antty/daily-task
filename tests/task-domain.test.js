@@ -25,10 +25,16 @@ test('getDaySummary returns completion progress for calendar cells', () => {
   assert.deepEqual(summary, { total: 2, completed: 1, progress: 0.5 });
 });
 
+test('a new device starts without demonstration family data', () => {
+  const saved = new Map();
+  globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
+  assert.deepEqual(createStore().getState(), { members: [], types: [], tasks: [] });
+});
+
 test('member management updates names and removes deleted members from tasks', () => {
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
-  const store = createStore();
+  const store = createStore({ seedDemo: true });
   store.renameMember('me', '小林');
   store.deleteMember('partner');
   const state = store.getState();
@@ -40,7 +46,7 @@ test('member management updates names and removes deleted members from tasks', (
 test('type management updates names and clears deleted task types', () => {
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
-  const store = createStore();
+  const store = createStore({ seedDemo: true });
   store.renameType('home', '家庭事务');
   store.deleteType('health');
   const state = store.getState();
@@ -51,7 +57,7 @@ test('type management updates names and clears deleted task types', () => {
 test('deleting future occurrences keeps earlier completions and ends a recurring task', () => {
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
-  const store = createStore();
+  const store = createStore({ seedDemo: true });
   store.deleteTask('seed-1', 'future', '2026-07-15');
   const task = store.getState().tasks.find((item) => item.id === 'seed-1');
   assert.equal(task.endDate, '2026-07-14');
@@ -66,7 +72,7 @@ test('weekly tasks can occur on selected weekdays', () => {
 test('a newly created task keeps only the selected household member', () => {
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
-  const store = createStore();
+  const store = createStore({ seedDemo: true });
   store.addTaskForMember({ title: '个人任务', description: '', typeId: 'home', memberIds: ['partner'], startDate: '2026-07-14', recurrence: 'none', weekdays: [] }, 'me');
   assert.deepEqual(store.getState().tasks[0].memberIds, ['me']);
 });
@@ -74,7 +80,7 @@ test('a newly created task keeps only the selected household member', () => {
 test('editing a task updates its schedule details while retaining completion history', () => {
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
-  const store = createStore();
+  const store = createStore({ seedDemo: true });
   store.toggleCompletion('seed-1', '2026-07-14');
   store.updateTask('seed-1', { title: '准备早午餐', description: '增加水果', typeId: 'life', startDate: '2026-07-16', recurrence: 'weekly', weekdays: [1, 4] });
   const task = store.getState().tasks.find((item) => item.id === 'seed-1');
@@ -87,7 +93,7 @@ test('editing a task updates its schedule details while retaining completion his
 test('a member can be created with a custom avatar', () => {
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
-  const store = createStore();
+  const store = createStore({ seedDemo: true });
   store.addMember('小满', 'data:image/png;base64,avatar');
   const member = store.getState().members.find((item) => item.name === '小满');
   assert.equal(member.avatar, 'data:image/png;base64,avatar');
@@ -96,7 +102,7 @@ test('a member can be created with a custom avatar', () => {
 test('a member avatar can be updated after creation', () => {
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
-  const store = createStore();
+  const store = createStore({ seedDemo: true });
 
   store.updateMemberAvatar('me', 'data:image/png;base64,new-avatar');
 
@@ -106,7 +112,7 @@ test('a member avatar can be updated after creation', () => {
 test('completing a task stores an optional note and image for that day', () => {
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
-  const store = createStore();
+  const store = createStore({ seedDemo: true });
   store.completeTask('seed-1', '2026-07-14', { note: '早餐做得很成功', image: 'data:image/png;base64,proof' });
   const task = store.getState().tasks.find((item) => item.id === 'seed-1');
   assert.deepEqual(task.completedDates, ['2026-07-14']);

@@ -11,10 +11,12 @@ const seed = {
   ],
 };
 
+const emptyState = { members: [], types: [], tasks: [] };
+
 const clone = (value) => structuredClone(value);
 
-export function createStore() {
-  let state = load();
+export function createStore({ seedDemo = false } = {}) {
+  let state = load(seedDemo);
   const listeners = new Set();
   const save = () => { localStorage.setItem(KEY, JSON.stringify(state)); listeners.forEach((listener) => listener(clone(state))); };
   return {
@@ -62,6 +64,7 @@ export function createStore() {
   };
 }
 
-function load() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || clone(seed); } catch { return clone(seed); }
+function load(seedDemo) {
+  const fallback = seedDemo ? seed : emptyState;
+  try { return JSON.parse(localStorage.getItem(KEY)) || clone(fallback); } catch { return clone(fallback); }
 }
