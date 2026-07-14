@@ -7,7 +7,15 @@ create table public.households (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references auth.users(id) on delete cascade,
   name text not null default '我的家庭',
+  invite_code text not null unique check (invite_code ~ '^[A-Z2-9]{8}$'),
   created_at timestamptz not null default now()
+);
+
+create table public.household_access (
+  household_id uuid not null references public.households(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (household_id, user_id)
 );
 
 create table public.household_members (
@@ -53,29 +61,49 @@ create table public.task_completions (
 );
 
 alter table public.households enable row level security;
+alter table public.household_access enable row level security;
 alter table public.household_members enable row level security;
 alter table public.task_types enable row level security;
 alter table public.tasks enable row level security;
 alter table public.task_completions enable row level security;
 
-create or replace function public.owns_household(target_household uuid)
+create or replace function public.can_access_household(target_household uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
     select 1 from public.households
     where id = target_household and owner_id = auth.uid()
+  ) or exists (
+    select 1 from public.household_access
+    where household_id = target_household and user_id = auth.uid()
   );
 $$;
 
-create policy "owners manage their household" on public.households
-  for all using (owner_id = auth.uid()) with check (owner_id = auth.uid());
+create policy "owners create households" on public.households for insert with check (owner_id = auth.uid());
+create policy "members read linked households" on public.households for select using (public.can_access_household(id));
+create policy "owners update households" on public.households for update using (owner_id = auth.uid()) with check (owner_id = auth.uid());
+create policy "owners delete households" on public.households for delete using (owner_id = auth.uid());
+create policy "users read their household access" on public.household_access for select using (user_id = auth.uid());
 create policy "owners manage members" on public.household_members
-  for all using (public.owns_household(household_id)) with check (public.owns_household(household_id));
+  for all using (public.can_access_household(household_id)) with check (public.can_access_household(household_id));
 create policy "owners manage task types" on public.task_types
-  for all using (public.owns_household(household_id)) with check (public.owns_household(household_id));
+  for all using (public.can_access_household(household_id)) with check (public.can_access_household(household_id));
 create policy "owners manage tasks" on public.tasks
-  for all using (public.owns_household(household_id)) with check (public.owns_household(household_id));
+  for all using (public.can_access_household(household_id)) with check (public.can_access_household(household_id));
 create policy "owners manage completions" on public.task_completions
-  for all using (public.owns_household(household_id)) with check (public.owns_household(household_id));
+  for all using (public.can_access_household(household_id)) with check (public.can_access_household(household_id));
+
+create or replace function public.join_household_by_invite(invite_code text)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare target_household uuid;
+begin
+  if auth.uid() is null then raise exception '请先建立登录会话'; end if;
+  select id into target_household from public.households where households.invite_code = upper(trim(join_household_by_invite.invite_code));
+  if target_household is null then raise exception '邀请码无效'; end if;
+  insert into public.household_access (household_id, user_id) values (target_household, auth.uid()) on conflict do nothing;
+  return target_household;
+end;
+$$;
+grant execute on function public.join_household_by_invite(text) to authenticated;
 
 insert into storage.buckets (id, name, public)
 values ('task-media', 'task-media', true)
@@ -85,23 +113,23 @@ create policy "owners upload task media" on storage.objects
   for insert to authenticated
   with check (
     bucket_id = 'task-media'
-    and public.owns_household((storage.foldername(name))[1]::uuid)
+    and public.can_access_household((storage.foldername(name))[1]::uuid)
   );
 create policy "owners read task media" on storage.objects
   for select to authenticated
   using (
     bucket_id = 'task-media'
-    and public.owns_household((storage.foldername(name))[1]::uuid)
+    and public.can_access_household((storage.foldername(name))[1]::uuid)
   );
 create policy "owners update task media" on storage.objects
   for update to authenticated
   using (
     bucket_id = 'task-media'
-    and public.owns_household((storage.foldername(name))[1]::uuid)
+    and public.can_access_household((storage.foldername(name))[1]::uuid)
   );
 create policy "owners delete task media" on storage.objects
   for delete to authenticated
   using (
     bucket_id = 'task-media'
-    and public.owns_household((storage.foldername(name))[1]::uuid)
+    and public.can_access_household((storage.foldername(name))[1]::uuid)
   );

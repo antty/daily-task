@@ -66,6 +66,15 @@ test('member management provides an avatar editing entry', async () => {
   assert.match(html, /name="member-avatar" type="file" accept="image\/\*"/);
 });
 
+test('family invite flow exposes an invite code and joining entry', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(html, /id="open-join-family"/);
+  assert.match(html, /id="join-family-form"/);
+  assert.match(html, /id="family-invite-code"/);
+  assert.match(app, /joinHousehold/);
+  assert.match(app, /需要执行迁移/);
+});
+
 test('future task dates stay unmarked and completion uploads have a preview', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(app, /date > today/);

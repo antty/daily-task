@@ -53,6 +53,8 @@ python3 -m http.server 4173
 3. 项目地址与 Publishable key 已写入 `src/supabase-config.js`；它们属于前端公开配置，切勿在仓库中放入 `service_role` 密钥。
 4. 本地开发时用 HTTP 服务启动；部署到 GitHub Pages 后会自动使用线上地址。
 
+已执行过旧版 schema 的项目，还需要在 SQL Editor 运行 [invite-migration.sql](supabase/invite-migration.sql)，才能启用跨设备家庭邀请码。
+
 免费项目适合个人家庭使用；连续闲置时可能会暂停，恢复后继续可用。
 
 ## 测试
