@@ -55,6 +55,7 @@ test('calendar renders distinct complete and pending day states', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(app, /calendar-status complete/);
   assert.match(app, /calendar-status pending/);
+  assert.match(app, /calendar-status has-task/);
   assert.match(app, /date === today && summary\.completed !== summary\.total/);
 });
 
