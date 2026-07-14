@@ -89,6 +89,7 @@ test('member management provides an avatar editing entry', async () => {
 
 test('family invite flow exposes an invite code and joining entry', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const remoteStore = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
   assert.match(html, /id="open-join-family"/);
   assert.match(html, /id="open-join-family" class="text-button" aria-pressed="false"/);
   assert.match(html, /id="join-family-form"/);
@@ -97,6 +98,7 @@ test('family invite flow exposes an invite code and joining entry', async () => 
   assert.match(app, /hasJoinedHousehold/);
   assert.match(app, /store\.hasJoinedHousehold\?\.\(\) \|\| data\.members\.length/);
   assert.match(app, /需要执行迁移/);
+  assert.match(remoteStore, /else \{ householdId = ''; inviteCode = ''; \}/);
 });
 
 test('future task dates stay unmarked and completion uploads have a preview', async () => {

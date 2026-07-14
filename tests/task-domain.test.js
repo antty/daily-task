@@ -58,6 +58,7 @@ test('deleting future occurrences keeps earlier completions and ends a recurring
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
   const store = createStore({ seedDemo: true });
+  store.updateTask('seed-1', { startDate: '2026-07-14' });
   store.deleteTask('seed-1', 'future', '2026-07-15');
   const task = store.getState().tasks.find((item) => item.id === 'seed-1');
   assert.equal(task.endDate, '2026-07-14');
