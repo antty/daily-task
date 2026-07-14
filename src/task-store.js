@@ -46,6 +46,7 @@ export function createStore() {
     },
     addMember(name, avatar = '') { state.members.push({ id: crypto.randomUUID(), name, avatar, color: ['#6750a4', '#ec6d8c', '#377d70', '#c2733c'][state.members.length % 4] }); save(); },
     renameMember(id, name) { state.members = state.members.map((member) => member.id === id ? { ...member, name } : member); save(); },
+    updateMemberAvatar(id, avatar) { state.members = state.members.map((member) => member.id === id ? { ...member, avatar } : member); save(); },
     deleteMember(id) {
       state.members = state.members.filter((member) => member.id !== id);
       state.tasks = state.tasks.map((task) => ({ ...task, memberIds: task.memberIds.filter((memberId) => memberId !== id) }));

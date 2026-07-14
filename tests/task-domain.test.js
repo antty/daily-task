@@ -93,6 +93,16 @@ test('a member can be created with a custom avatar', () => {
   assert.equal(member.avatar, 'data:image/png;base64,avatar');
 });
 
+test('a member avatar can be updated after creation', () => {
+  const saved = new Map();
+  globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
+  const store = createStore();
+
+  store.updateMemberAvatar('me', 'data:image/png;base64,new-avatar');
+
+  assert.equal(store.getState().members.find((member) => member.id === 'me').avatar, 'data:image/png;base64,new-avatar');
+});
+
 test('completing a task stores an optional note and image for that day', () => {
   const saved = new Map();
   globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };

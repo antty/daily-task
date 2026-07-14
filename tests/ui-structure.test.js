@@ -28,6 +28,7 @@ test('the current member is displayed as a non-switchable profile chip', () => {
 
 test('member creation supports a custom avatar upload', () => {
   assert.match(html, /name="avatar" type="file" accept="image\/\*"/);
+  assert.match(html, /id="member-avatar-add-preview"/);
 });
 
 test('task completion has a dedicated note and image dialog', () => {
@@ -54,10 +55,18 @@ test('calendar renders distinct complete and pending day states', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(app, /calendar-status complete/);
   assert.match(app, /calendar-status pending/);
+  assert.match(app, /date >= today/);
+});
+
+test('member management provides an avatar editing entry', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(app, /data-edit-avatar/);
+  assert.match(html, /id="member-avatar-form"/);
+  assert.match(html, /name="member-avatar" type="file" accept="image\/\*"/);
 });
 
 test('future task dates stay unmarked and completion uploads have a preview', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
-  assert.match(app, /date > today/);
+  assert.match(app, /date >= today/);
   assert.match(html, /id="completion-image-preview"/);
 });

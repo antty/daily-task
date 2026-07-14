@@ -101,6 +101,7 @@ export function createSupabaseStore() {
     toggleCompletion(id, date) { local.toggleCompletion(id, date); sync(() => write(supabase.from('task_completions').delete().eq('task_id', id).eq('occurrence_date', date))); },
     addMember(name, avatar) { local.addMember(name, avatar); const member = local.getState().members.at(-1); sync(async () => write(supabase.from('household_members').insert({ id: member.id, household_id: householdId, display_name: name, color: member.color, avatar_url: await asDataUrlFile(avatar, 'avatar', householdId) || null }))); },
     renameMember(id, name) { local.renameMember(id, name); sync(() => write(supabase.from('household_members').update({ display_name: name }).eq('id', id))); },
+    updateMemberAvatar(id, avatar) { local.updateMemberAvatar(id, avatar); sync(async () => write(supabase.from('household_members').update({ avatar_url: await asDataUrlFile(avatar, 'avatar', householdId) || null }).eq('id', id))); },
     deleteMember(id) { local.deleteMember(id); sync(() => write(supabase.from('household_members').delete().eq('id', id))); },
     addType(name) { local.addType(name); const type = local.getState().types.at(-1); sync(() => write(supabase.from('task_types').insert({ id: type.id, household_id: householdId, name, color: type.color }))); },
     renameType(id, name) { local.renameType(id, name); sync(() => write(supabase.from('task_types').update({ name }).eq('id', id))); },
