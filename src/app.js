@@ -1,7 +1,7 @@
 import { buildOccurrences, getDaySummary, toDateKey } from './task-domain.js';
-import { createStore } from './task-store.js';
+import { createSupabaseStore } from './supabase-store.js';
 
-const store = createStore();
+const store = createSupabaseStore();
 const today = toDateKey(new Date());
 const state = { memberId: '', selectedDate: today, month: today.slice(0, 7) };
 const $ = (selector) => document.querySelector(selector);
@@ -46,3 +46,4 @@ $('#open-manage').onclick = () => openManage(true); $('#close-manage').onclick =
 $('#confirm-undo-completion').onclick = () => { store.toggleCompletion(pendingUndoCompletion.id, pendingUndoCompletion.date); $('#undo-completion-dialog').close(); showToast('已撤销完成状态。'); };
 $('#completion-form').elements['completion-image'].addEventListener('change', async (event) => { const preview = $('#completion-image-preview'); const file = event.target.files[0]; if (!file) { preview.hidden = true; preview.removeAttribute('src'); return; } if (file.size > 1_500_000) { showToast('图片请控制在 1.5MB 以内。'); event.target.value = ''; preview.hidden = true; return; } preview.src = await fileToDataUrl(file); preview.hidden = false; });
 $('#task-date').value = today; store.subscribe(render); render(); setInterval(rotateMotivation, 16000); $('#member-gate').showModal();
+store.ready.catch(() => showToast('云端同步未连接，当前内容暂存于本机。'));

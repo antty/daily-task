@@ -19,6 +19,7 @@ export function createStore() {
   const save = () => { localStorage.setItem(KEY, JSON.stringify(state)); listeners.forEach((listener) => listener(clone(state))); };
   return {
     getState: () => clone(state),
+    replaceState(nextState) { state = clone(nextState); save(); },
     subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
     addTask(task) { state.tasks.unshift({ ...task, id: crypto.randomUUID(), completedDates: [] }); save(); },
     addTaskForMember(task, memberId) { state.tasks.unshift({ ...task, id: crypto.randomUUID(), memberIds: [memberId], completedDates: [] }); save(); },

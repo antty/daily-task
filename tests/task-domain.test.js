@@ -102,3 +102,18 @@ test('completing a task stores an optional note and image for that day', () => {
   assert.deepEqual(task.completedDates, ['2026-07-14']);
   assert.deepEqual(task.completionDetails['2026-07-14'], { note: '早餐做得很成功', image: 'data:image/png;base64,proof' });
 });
+
+test('store can replace its cached state after cloud hydration', () => {
+  const saved = new Map();
+  globalThis.localStorage = { getItem: (key) => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
+  const store = createStore();
+  const remoteState = {
+    members: [{ id: 'cloud-member', name: '云端成员', color: '#6750a4', avatar: '' }],
+    types: [{ id: 'cloud-type', name: '云端类型', color: '#3f7cac' }],
+    tasks: [{ id: 'cloud-task', title: '云端任务', description: '', typeId: 'cloud-type', memberIds: ['cloud-member'], startDate: '2026-07-14', recurrence: 'none', weekdays: [], completedDates: [] }],
+  };
+
+  store.replaceState(remoteState);
+
+  assert.deepEqual(store.getState(), remoteState);
+});
