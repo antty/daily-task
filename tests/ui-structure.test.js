@@ -55,7 +55,7 @@ test('calendar renders distinct complete and pending day states', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(app, /calendar-status complete/);
   assert.match(app, /calendar-status pending/);
-  assert.match(app, /date >= today/);
+  assert.match(app, /date === today && summary\.completed !== summary\.total/);
 });
 
 test('member management provides an avatar editing entry', async () => {
@@ -67,6 +67,6 @@ test('member management provides an avatar editing entry', async () => {
 
 test('future task dates stay unmarked and completion uploads have a preview', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
-  assert.match(app, /date >= today/);
+  assert.match(app, /date > today/);
   assert.match(html, /id="completion-image-preview"/);
 });
