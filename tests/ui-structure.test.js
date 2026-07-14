@@ -47,6 +47,12 @@ test('small screens keep family switching and task management on one row', async
   assert.match(css, /\.home-bar \.header-actions \.text-button\{[^}]*white-space:nowrap/);
 });
 
+test('touching buttons does not leave a browser-default selected outline', async () => {
+  const css = await readFile(new URL('../interaction.css', import.meta.url), 'utf8');
+  assert.match(css, /-webkit-tap-highlight-color:transparent/);
+  assert.match(css, /button:focus:not\(:focus-visible\)\{outline:0/);
+});
+
 test('member creation supports a custom avatar upload', () => {
   assert.match(html, /name="avatar" type="file" accept="image\/\*"/);
   assert.match(html, /id="member-avatar-add-preview"/);
