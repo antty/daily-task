@@ -25,6 +25,15 @@
 | iPad 使用管理 | 设置当天总额度、记录多条使用时段、按类型计入或排除额度、实时计时、超时预警与月历统计。 |
 | 云端同步 | 使用 Supabase 保存家庭、成员、任务、完成记录及 iPad 使用数据；图片存入 Storage。 |
 
+## 产品关键页截图
+<img width="597" height="415" alt="截屏2026-07-15 17 00 21" src="https://github.com/user-attachments/assets/3ac2ec17-d927-4652-9cf1-e0d3f37915f5" />
+
+<img width="1233" height="609" alt="截屏2026-07-15 16 59 12" src="https://github.com/user-attachments/assets/6178861a-861e-434d-9b23-b1f349a588b2" />
+
+<img width="1241" height="565" alt="截屏2026-07-15 16 57 57" src="https://github.com/user-attachments/assets/cf659263-7608-4280-a031-c0dff905f9f9" />
+
+
+
 ## 每日打卡
 
 ### 使用流程
