@@ -8,13 +8,15 @@
   <link rel="stylesheet" href="extras.css">
   <link rel="stylesheet" href="extras-3.css">
   <link rel="stylesheet" href="interaction.css">
+  <link rel="stylesheet" href="ipad.css">
+  <link rel="stylesheet" href="ipad-layout.css">
 </head>
 <body>
   <main>
     <header class="home-bar">
       <div class="member-profile" aria-label="当前成员"><span id="member-avatar" class="member-avatar">我</span><span><strong id="member-name">我</strong></span></div>
       <section id="daily-motivation" class="motivation inline-motivation"><div><h2 id="motivation-text"></h2><p id="motivation-note"></p></div></section>
-      <div class="header-actions"><button id="open-member-switch" class="text-button member-switch-entry icon-entry" aria-label="切换家人" title="切换家人" hidden><span aria-hidden="true">⇄</span></button><button id="open-manage" class="text-button manage-entry icon-entry" aria-label="管理任务" title="管理任务"><span aria-hidden="true">☷</span></button></div>
+      <div class="header-actions"><button id="open-ipad-manager" class="text-button icon-entry ipad-entry" aria-label="iPad 使用管理" title="iPad 使用管理"><span aria-hidden="true">◷</span></button><button id="open-member-switch" class="text-button member-switch-entry icon-entry" aria-label="切换家人" title="切换家人" hidden><span aria-hidden="true">⇄</span></button><button id="open-manage" class="text-button manage-entry icon-entry" aria-label="管理任务" title="管理任务"><span aria-hidden="true">☷</span></button></div>
     </header>
     <section id="home-view" hidden>
       <div class="home-layout compact-home">
@@ -26,6 +28,18 @@
       <div class="manage-top"><h2>任务列表</h2><div class="manage-top-actions"><button id="open-type-dialog" class="text-button type-manage-entry">任务类型管理</button><button id="open-task-dialog" class="primary mini-primary">+ 添加任务</button><button class="text-button dialog-close-icon" data-close-dialog="manage-view" aria-label="关闭任务管理" title="关闭"><span aria-hidden="true">×</span></button></div></div>
       <section class="panel managed-tasks"><div id="managed-task-list"></div></section>
     </dialog>
+    <section id="ipad-view" hidden>
+      <section class="panel ipad-page-panel">
+        <div class="ipad-page-head"><p class="eyebrow">SCREEN TIME</p><h2>iPad 使用管理</h2></div>
+        <section id="ipad-limit-options"><p>先创建今天的使用额度</p><small>额度是今天所有计入时长的使用记录的父任务。</small><div><button data-ipad-limit="60">60 分钟</button><button data-ipad-limit="120">120 分钟</button><button data-ipad-limit="180">180 分钟</button><label>自定义<input id="ipad-custom-limit" type="number" min="1" max="600" placeholder="分钟"></label><button id="save-ipad-custom-limit">创建</button></div></section>
+        <section id="ipad-summary" hidden></section>
+        <div class="ipad-tools"><button id="open-ipad-type-dialog" class="text-button">使用类型管理</button><button id="open-ipad-entry-dialog" class="primary">+ 添加使用记录</button></div>
+        <div class="ipad-content-layout">
+          <section class="ipad-record-section"><div id="ipad-entry-list"></div></section>
+          <aside class="ipad-calendar-section"><div class="ipad-calendar-head"><strong>iPad 使用日历</strong></div><div id="ipad-calendar-grid" class="ipad-calendar-grid"></div></aside>
+        </div>
+      </section>
+    </section>
   </main>
 
   <dialog id="member-gate" class="manager-dialog gate-dialog"><div class="gate-head"><p class="eyebrow">WELCOME</p><div><button id="open-join-family" class="text-button" aria-pressed="false">加入家庭</button><button id="open-family-password" class="text-button">管理家人</button></div></div><h2>今天以谁的身份开始？</h2><p>选择家庭成员后进入任务系统。</p><div id="member-gate-list" class="member-gate-list"></div></dialog>
@@ -33,6 +47,9 @@
   <dialog id="member-dialog" class="manager-dialog"><div class="dialog-head"><div><p class="eyebrow">FAMILY</p><h2>成员管理</h2></div><button class="text-button" data-close-dialog="member-dialog">关闭</button></div><section class="invite-card"><span>家庭邀请码</span><strong id="family-invite-code">同步中</strong><small>在另一台设备点击“加入家庭”后输入此码。</small></section><form id="member-form" class="member-form"><input name="member" placeholder="成员名称" required><label class="avatar-upload">上传头像（可选）<input name="avatar" type="file" accept="image/*"></label><img id="member-avatar-add-preview" alt="新成员头像预览" hidden><button class="secondary">添加成员</button></form><div id="member-list" class="manage-list"></div></dialog>
   <dialog id="join-family-dialog" class="manager-dialog join-family-dialog"><div class="dialog-head"><div><p class="eyebrow">JOIN FAMILY</p><h2>加入已有家庭</h2></div><button class="text-button" data-close-dialog="join-family-dialog">关闭</button></div><p>向家人获取邀请码，加入后即可共享任务和完成记录。</p><form id="join-family-form"><input name="invite-code" placeholder="输入 8 位邀请码" autocomplete="off" maxlength="8" required><p id="join-family-error" class="form-error" hidden></p><div class="task-form-actions"><button class="text-button" type="button" data-close-dialog="join-family-dialog">取消</button><button class="primary">加入家庭</button></div></form></dialog>
   <dialog id="member-switch-dialog" class="manager-dialog member-switch-dialog"><div class="dialog-head"><div><p class="eyebrow">FAMILY</p><h2>切换家人</h2></div><button class="text-button" data-close-dialog="member-switch-dialog">关闭</button></div><p>选择后仅切换当前日历和任务视图。</p><div id="member-switch-list" class="member-switch-list"></div></dialog>
+  <dialog id="ipad-entry-dialog" class="manager-dialog"><div class="dialog-head"><h2>添加使用记录</h2><button class="text-button" data-close-dialog="ipad-entry-dialog">关闭</button></div><form id="ipad-entry-form"><input name="title" placeholder="使用内容（选填）"><label>使用类型<select id="ipad-entry-type" name="typeId" required><option value="">请选择使用类型</option></select></label><p id="ipad-entry-type-error" class="form-error" hidden>请选择使用类型。</p><button class="primary">开始计时</button></form></dialog>
+  <dialog id="ipad-completion-dialog" class="manager-dialog"><div class="dialog-head"><div><p class="eyebrow">USAGE FINISHED</p><h2>结束这次使用</h2></div><button class="text-button" data-close-dialog="ipad-completion-dialog">取消</button></div><form id="ipad-completion-form"><textarea name="ipad-completion-note" placeholder="补充本次使用说明（选填）"></textarea><div class="task-form-actions"><button class="text-button" type="button" data-close-dialog="ipad-completion-dialog">暂不填写</button><button class="primary">完成并保存</button></div></form></dialog>
+  <dialog id="ipad-type-dialog" class="manager-dialog"><div class="dialog-head"><div><p class="eyebrow">USAGE TYPE</p><h2>使用类型管理</h2></div><button class="text-button" data-close-dialog="ipad-type-dialog">关闭</button></div><form id="ipad-type-form"><input name="name" placeholder="例如：学习、游戏" required><label class="ipad-count-rule"><input name="counts" type="checkbox" checked><span>计入每日额度<small>关闭后仅记录使用时段，不参与超时统计。</small></span></label><button class="secondary">添加类型</button></form><div id="ipad-type-list" class="manage-list"></div></dialog>
   <dialog id="member-avatar-dialog" class="manager-dialog avatar-editor-dialog"><div class="dialog-head"><div><p class="eyebrow">AVATAR</p><h2>修改头像</h2></div><button class="text-button" data-close-dialog="member-avatar-dialog">关闭</button></div><form id="member-avatar-form"><img id="member-avatar-preview" alt="成员头像预览" hidden><label class="avatar-upload">选择新的头像<input name="member-avatar" type="file" accept="image/*"></label><div class="task-form-actions"><button class="text-button" type="button" data-close-dialog="member-avatar-dialog">取消</button><button class="primary">保存头像</button></div></form></dialog>
   <dialog id="type-dialog" class="manager-dialog type-manager-dialog"><div class="dialog-head"><h2>任务类型</h2><button class="text-button" data-close-dialog="type-dialog">关闭</button></div><form id="type-form" class="inline-form"><input name="type" placeholder="类型名称" required><button class="secondary">添加</button></form><div id="type-list" class="manage-list"></div></dialog>
   <dialog id="task-dialog" class="manager-dialog task-composer-dialog"><div class="dialog-head"><div><p class="eyebrow" id="task-dialog-kicker">NEW TASK</p><h2 id="task-dialog-title">添加任务</h2><span id="task-owner-label"></span></div><button class="text-button" data-close-dialog="task-dialog">关闭</button></div><form id="task-form"><input name="title" placeholder="任务标题" required autofocus><textarea name="description" placeholder="任务描述（选填）"></textarea><div class="form-grid"><label>类型<select id="task-type" name="typeId"></select></label><label>开始日期<input id="task-date" type="date" name="date" required></label><label>重复<select id="recurrence" name="recurrence"><option value="none">仅当天</option><option value="daily">每天</option><option value="weekly">每周</option></select></label></div><fieldset id="weekday-field" hidden><legend>每周执行日</legend><div id="task-weekdays" class="checks weekday-checks"></div></fieldset><p class="owner-note">新建任务仅会添加到当前成员名下。</p><div class="task-form-actions"><button class="text-button" type="button" data-close-dialog="task-dialog">取消</button><button id="save-task-button" class="primary">添加到日程</button></div></form></dialog>
