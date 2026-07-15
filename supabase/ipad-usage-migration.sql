@@ -23,11 +23,17 @@ create table if not exists public.ipad_usage_entries (
   member_id uuid not null references public.household_members(id) on delete cascade,
   daily_limit_id uuid not null references public.ipad_daily_limits(id) on delete cascade,
   type_id uuid references public.ipad_usage_types(id) on delete set null,
-  title text not null check (char_length(trim(title)) > 0),
+  title text,
+  note text not null default '',
   started_at timestamptz not null,
   ended_at timestamptz,
   created_at timestamptz not null default now()
 );
+alter table public.ipad_daily_limits drop constraint if exists ipad_daily_limits_limit_minutes_check;
+alter table public.ipad_daily_limits add constraint ipad_daily_limits_limit_minutes_check check (limit_minutes >= 1);
+alter table public.ipad_usage_entries alter column title drop not null;
+alter table public.ipad_usage_entries drop constraint if exists ipad_usage_entries_title_check;
+alter table public.ipad_usage_entries add column if not exists note text not null default '';
 alter table public.ipad_usage_types enable row level security;
 alter table public.ipad_daily_limits enable row level security;
 alter table public.ipad_usage_entries enable row level security;

@@ -41,14 +41,96 @@ test('calendar provides a separate family switcher when more than one member exi
   assert.match(app, /data\.members\.length > 1/);
 });
 
-test('ipad management is an independent member-scoped dialog', async () => {
+test('ipad management collects a required type and completion note', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const entryDialog = html.match(/<dialog id="ipad-entry-dialog"[\s\S]*?<\/dialog>/)?.[0] || '';
   assert.match(html, /id="open-ipad-manager"/);
-  assert.match(html, /id="ipad-manager-dialog"/);
+  assert.match(html, /id="ipad-view"/);
   assert.match(html, /id="ipad-limit-options"/);
   assert.match(html, /id="ipad-calendar-grid"/);
+  assert.match(entryDialog, /id="ipad-entry-type" name="typeId" required/);
+  assert.match(html, /id="ipad-entry-type-error"/);
+  assert.doesNotMatch(entryDialog, /name="title"[^>]*required/);
+  assert.match(html, /<dialog id="ipad-completion-dialog"/);
+  assert.match(html, /name="ipad-completion-note"/);
   assert.match(app, /createIpadDailyLimit/);
+  assert.match(app, /请选择使用类型/);
+  assert.match(app, /completeIpadUsageEntry\(pendingIpadCompletion, new Date\(\)\.toISOString\(\), note\)/);
   assert.match(app, /getIpadDayStatus/);
+});
+
+test('completed ipad records expose duration and an overtime state', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(app, /getUsageMinutes/);
+  assert.match(app, /ipad-duration \$\{isOvertime/);
+});
+
+test('ipad record content keeps its type and completion note on one compact line', async () => {
+  const css = await readFile(new URL('../ipad.css', import.meta.url), 'utf8');
+  assert.match(css, /\.ipad-record>div:first-child\{[^}]*white-space:nowrap/);
+  assert.match(css, /\.ipad-record>div:first-child p\{display:inline/);
+});
+
+test('ipad record timing uses a roomy horizontal information group on desktop', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(css, /\.ipad-record\s*\{[^}]*gap:\s*24px/);
+  assert.match(css, /\.ipad-record-time\s*\{[^}]*display:\s*flex[^}]*gap:\s*14px/);
+});
+
+test('ipad page uses a wide two-column workspace for records and calendar', async () => {
+  const htmlSource = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(htmlSource, /class="ipad-content-layout"/);
+  assert.match(htmlSource, /class="ipad-record-section"/);
+  assert.match(htmlSource, /class="ipad-calendar-section"/);
+  assert.match(css, /\.ipad-page-panel\s*\{[^}]*width:\s*100%[^}]*max-width:\s*none/);
+  assert.match(css, /\.ipad-content-layout\s*\{[^}]*grid-template-columns:/);
+});
+
+test('ipad manager opens a fresh versioned standalone page', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(app, /ipadMember=\$\{encodeURIComponent\(state\.memberId\)\}&v=/);
+});
+
+test('non-counting ipad usage types have a distinct record marker', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(app, /classList\.add\('excluded'\)/);
+  assert.match(app, /不计额度/);
+  assert.match(css, /\.ipad-type-tag\.excluded/);
+});
+
+test('active ipad records refresh their elapsed seconds without rerendering the page', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(app, /data-ipad-running-started-at/);
+  assert.match(app, /function updateIpadRunningTimers\(\)/);
+  assert.match(app, /setInterval\(updateIpadRunningTimers, 1000\)/);
+  assert.match(app, /Math\.floor\(seconds \/ 60\)/);
+  assert.match(app, /分钟/);
+});
+
+test('active ipad timer occupies its own prominent wrapped row', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(css, /\.ipad-record-time\s*\{[^}]*flex-wrap:\s*wrap/);
+  assert.match(css, /\.ipad-running-duration\s*\{[^}]*flex-basis:\s*100%/);
+  assert.match(css, /\.ipad-running-duration\s*\{[^}]*background:/);
+});
+
+test('overtime duration is rendered as a prominent warning badge', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(css, /\.ipad-duration\.overtime\s*\{[^}]*background:/);
+  assert.match(css, /\.ipad-duration\.overtime\s*\{[^}]*border:/);
+});
+
+test('running ipad timer escalates from yellow at 45 minutes to red at one hour', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(app, /seconds >= 3600/);
+  assert.match(app, /seconds >= 2700/);
+  assert.match(app, /classList\.add\('danger'\)/);
+  assert.match(app, /classList\.add\('warning'\)/);
+  assert.match(css, /\.ipad-running-duration\.warning/);
+  assert.match(css, /\.ipad-running-duration\.danger/);
 });
 
 test('small screens keep family switching and task management on one row', async () => {
