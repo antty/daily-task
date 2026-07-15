@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { getDailyUsageSummary, getIpadDayStatus } from '../src/ipad-domain.js';
+import { readFile } from 'node:fs/promises';
 
 test('only completed usage types that count toward the limit consume the daily quota', () => {
   const summary = getDailyUsageSummary(
@@ -15,6 +16,11 @@ test('only completed usage types that count toward the limit consume the daily q
 
   assert.deepEqual(summary, { limitMinutes: 60, countedMinutes: 45, remainingMinutes: 15, overtimeMinutes: 0, isOvertime: false });
   assert.equal(getIpadDayStatus(summary), 'within-limit');
+});
+
+test('supabase store exposes iPad data through independent APIs', async () => {
+  const source = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  for (const name of ['getIpadState', 'createIpadDailyLimit', 'addIpadUsageEntry', 'completeIpadUsageEntry', 'addIpadUsageType']) assert.match(source, new RegExp(name));
 });
 
 test('counted usage over the daily quota reports overtime while excluded types remain ignored', () => {

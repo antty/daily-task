@@ -24,8 +24,25 @@ export function createSupabaseStore() {
   let inviteCode = '';
   let userId;
   let readyError;
+  let ipadState = { types: [], limits: [], entries: [] };
   const ready = connect();
   const sync = (work) => ready.then(work).catch((error) => { readyError = error; console.error('Supabase sync failed', error); });
+
+  async function refreshIpadState() {
+    if (!householdId) return;
+    const [{ data: types, error: typeError }, { data: limits, error: limitError }, { data: entries, error: entryError }] = await Promise.all([
+      supabase.from('ipad_usage_types').select('*').eq('household_id', householdId),
+      supabase.from('ipad_daily_limits').select('*').eq('household_id', householdId),
+      supabase.from('ipad_usage_entries').select('*').eq('household_id', householdId),
+    ]);
+    if (typeError || limitError || entryError) throw typeError || limitError || entryError;
+    ipadState = {
+      types: types.map((item) => ({ id: item.id, memberId: item.member_id, name: item.name, color: item.color, countsTowardLimit: item.counts_toward_limit })),
+      limits: limits.map((item) => ({ id: item.id, memberId: item.member_id, date: item.usage_date, limitMinutes: item.limit_minutes })),
+      entries: entries.map((item) => ({ id: item.id, memberId: item.member_id, dailyLimitId: item.daily_limit_id, typeId: item.type_id, title: item.title, startedAt: item.started_at, endedAt: item.ended_at })),
+    };
+    local.replaceState(local.getState());
+  }
 
   async function connect() {
     let { data: { session } } = await supabase.auth.getSession();
@@ -49,6 +66,7 @@ export function createSupabaseStore() {
     const remote = await loadRemote();
     if (remote.members.length || remote.tasks.length || remote.types.length) local.replaceState(remote);
     else await seedRemote(local.getState());
+    await refreshIpadState();
   }
 
   async function loadRemote() {
@@ -102,6 +120,13 @@ export function createSupabaseStore() {
     getConnectionError: () => readyError,
     getInviteCode: () => inviteCode,
     hasJoinedHousehold: () => localStorage.getItem(joinedHouseholdKey) === householdId,
+    getIpadState: () => structuredClone(ipadState),
+    createIpadDailyLimit(memberId, date, limitMinutes) { const limit = { id: crypto.randomUUID(), memberId, date, limitMinutes }; ipadState.limits = [...ipadState.limits.filter((item) => !(item.memberId === memberId && item.date === date)), limit]; local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_daily_limits').upsert({ id: limit.id, household_id: householdId, member_id: memberId, usage_date: date, limit_minutes: limitMinutes }, { onConflict: 'member_id,usage_date' }))); return limit; },
+    addIpadUsageEntry(entry) { const created = { ...entry, id: crypto.randomUUID(), endedAt: null }; ipadState.entries.push(created); local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_usage_entries').insert({ id: created.id, household_id: householdId, member_id: created.memberId, daily_limit_id: created.dailyLimitId, type_id: created.typeId || null, title: created.title, started_at: created.startedAt }))); return created; },
+    completeIpadUsageEntry(id, endedAt) { ipadState.entries = ipadState.entries.map((entry) => entry.id === id ? { ...entry, endedAt } : entry); local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_usage_entries').update({ ended_at: endedAt }).eq('id', id))); },
+    addIpadUsageType(memberId, name, countsTowardLimit = true) { const type = { id: crypto.randomUUID(), memberId, name, countsTowardLimit, color: colors[ipadState.types.length % colors.length] }; ipadState.types.push(type); local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_usage_types').insert({ id: type.id, household_id: householdId, member_id: memberId, name, counts_toward_limit: countsTowardLimit, color: type.color }))); return type; },
+    updateIpadUsageType(id, patch) { ipadState.types = ipadState.types.map((type) => type.id === id ? { ...type, ...patch } : type); local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_usage_types').update({ name: patch.name, counts_toward_limit: patch.countsTowardLimit }).eq('id', id))); },
+    deleteIpadUsageType(id) { ipadState.types = ipadState.types.filter((type) => type.id !== id); local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_usage_types').delete().eq('id', id))); },
     joinHousehold(invite) { return ready.then(async () => { const normalizedInvite = String(invite).trim().toUpperCase(); const { data, error } = await supabase.rpc('join_household_by_invite', { invite_code: normalizedInvite }); if (error) throw error; householdId = data; localStorage.setItem(householdKey, householdId); localStorage.setItem(joinedHouseholdKey, householdId); inviteCode = normalizedInvite; local.replaceState(await loadRemote()); }); },
     addTaskForMember(task, memberId) { local.addTaskForMember(task, memberId); const created = local.getState().tasks[0]; sync(() => write(supabase.from('tasks').insert({ id: created.id, household_id: householdId, title: created.title, description: created.description, type_id: created.typeId || null, member_id: memberId, start_date: created.startDate, recurrence: created.recurrence, weekdays: created.weekdays || [] }))); },
     updateTask(id, patch) { local.updateTask(id, patch); sync(() => write(supabase.from('tasks').update({ title: patch.title, description: patch.description, type_id: patch.typeId || null, start_date: patch.startDate, recurrence: patch.recurrence, weekdays: patch.weekdays || [] }).eq('id', id))); },
