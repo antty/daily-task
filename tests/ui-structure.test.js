@@ -121,6 +121,25 @@ test('active ipad records refresh their elapsed seconds without rerendering the 
   assert.match(app, /分钟/);
 });
 
+test('uploads compress images before converting them to data URLs', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(app, /function compressImageFile\(/);
+  assert.match(app, /canvas\.toBlob/);
+  assert.match(app, /await compressImageFile\(file\)/);
+  assert.doesNotMatch(app, /1\.5MB/);
+});
+
+test('mobile ipad management stays in the current page and exposes a return action', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(html, /id="close-ipad-page"/);
+  assert.match(app, /matchMedia\('\(max-width: 760px\)'\)/);
+  assert.match(app, /history\.back\(\)/);
+  assert.match(css, /\.ipad-mobile-back/);
+  assert.match(html, /id="close-ipad-page"[^>]*aria-label="返回任务"/);
+  assert.match(css, /\.ipad-mobile-back\s*\{[^}]*border-radius:\s*50%/);
+});
+
 test('active ipad timer occupies its own prominent wrapped row', async () => {
   const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
   assert.match(css, /\.ipad-record-time\s*\{[^}]*flex-wrap:\s*wrap/);

@@ -82,6 +82,20 @@
   max-width: none;
 }
 
+.ipad-mobile-back {
+  display: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #e5ddef;
+  border-radius: 50%;
+  background: #fff;
+  color: #6750a4;
+  font-size: 18px;
+  line-height: 1;
+  box-shadow: 0 3px 8px #2b16300a;
+}
+
 .ipad-content-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.75fr);
@@ -106,6 +120,18 @@
 }
 
 @media (max-width: 760px) {
+  .ipad-page-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ipad-mobile-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .ipad-page-panel {
     width: 100%;
     max-width: none;

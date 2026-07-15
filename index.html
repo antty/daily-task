@@ -30,7 +30,7 @@
     </dialog>
     <section id="ipad-view" hidden>
       <section class="panel ipad-page-panel">
-        <div class="ipad-page-head"><p class="eyebrow">SCREEN TIME</p><h2>iPad 使用管理</h2></div>
+        <div class="ipad-page-head"><button id="close-ipad-page" class="text-button ipad-mobile-back" aria-label="返回任务" title="返回任务"><span aria-hidden="true">←</span></button><div><p class="eyebrow">SCREEN TIME</p><h2>iPad 使用管理</h2></div></div>
         <section id="ipad-limit-options"><p>先创建今天的使用额度</p><small>额度是今天所有计入时长的使用记录的父任务。</small><div><button data-ipad-limit="60">60 分钟</button><button data-ipad-limit="120">120 分钟</button><button data-ipad-limit="180">180 分钟</button><label>自定义<input id="ipad-custom-limit" type="number" min="1" max="600" placeholder="分钟"></label><button id="save-ipad-custom-limit">创建</button></div></section>
         <section id="ipad-summary" hidden></section>
         <div class="ipad-tools"><button id="open-ipad-type-dialog" class="text-button">使用类型管理</button><button id="open-ipad-entry-dialog" class="primary">+ 添加使用记录</button></div>
