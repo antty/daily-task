@@ -131,16 +131,36 @@
 }
 
 @media (max-width: 760px) {
+  body:has(#ipad-view:not([hidden])) .home-bar {
+    display: none;
+  }
+
+  body:has(#ipad-view:not([hidden])) main {
+    padding-top: 20px;
+  }
+
   .ipad-page-head {
-    display: flex;
+    display: grid;
     align-items: center;
-    gap: 8px;
+    grid-template-columns: 32px 1fr 32px;
+    margin-bottom: 18px;
+  }
+
+  .ipad-page-head > div {
+    grid-column: 2;
+    text-align: center;
+  }
+
+  .ipad-page-head::after {
+    content: '';
   }
 
   .ipad-mobile-back {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .ipad-page-panel {

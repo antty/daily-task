@@ -140,6 +140,19 @@ test('mobile ipad management stays in the current page and exposes a return acti
   assert.match(css, /\.ipad-mobile-back\s*\{[^}]*border-radius:\s*50%/);
 });
 
+test('static assets use a release version to prevent stale mobile styles', () => {
+  assert.match(html, /href="styles\.css\?v=/);
+  assert.match(html, /href="ipad-layout\.css\?v=/);
+  assert.match(html, /src="src\/app\.js\?v=/);
+});
+
+test('mobile ipad view hides home navigation and centers its own heading', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(css, /body:has\(#ipad-view:not\(\[hidden\]\)\) \.home-bar/);
+  assert.match(css, /\.ipad-page-head > div\s*\{[^}]*text-align:\s*center/);
+  assert.match(css, /grid-template-columns:\s*32px 1fr 32px/);
+});
+
 test('active ipad timer occupies its own prominent wrapped row', async () => {
   const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
   assert.match(css, /\.ipad-record-time\s*\{[^}]*flex-wrap:\s*wrap/);
