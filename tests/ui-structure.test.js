@@ -164,6 +164,13 @@ test('running ipad timer escalates from yellow at 45 minutes to red at one hour'
   assert.match(css, /\.ipad-running-duration\.danger/);
 });
 
+test('completed ipad time fields use spaced punctuation separators', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(css, /\.ipad-record-time > span \+ span::before/);
+  assert.match(css, /content:\s*'·'/);
+  assert.match(css, /\.ipad-record-time \.ipad-duration::before/);
+});
+
 test('small screens keep family switching and task management on one row', async () => {
   const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
   assert.match(css, /@media\(max-width:600px\)\{\.home-bar \.header-actions\{[^}]*flex-direction:row/);

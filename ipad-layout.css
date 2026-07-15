@@ -34,8 +34,19 @@
 }
 
 .ipad-record-time .ipad-duration {
-  padding-left: 14px;
-  border-left: 1px solid #e9e1f0;
+  margin-left: 2px;
+}
+
+.ipad-record-time > span + span::before {
+  content: '·';
+  margin: 0 10px;
+  color: #b0a5bb;
+}
+
+.ipad-record-time .ipad-duration::before {
+  content: '·';
+  margin-right: 12px;
+  color: #b0a5bb;
 }
 
 .ipad-duration.overtime {
