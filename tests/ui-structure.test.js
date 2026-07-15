@@ -4,6 +4,10 @@ import { readFile } from 'node:fs/promises';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
+test('the browser page title presents the habit-building product name', () => {
+  assert.match(html, /<title>习惯养成<\/title>/);
+});
+
 test('family management is only available from the pre-entry dialog behind a password step', () => {
   const home = html.match(/<section id="home-view"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(home, /open-member-dialog/);
@@ -57,6 +61,14 @@ test('ipad management collects a required type and completion note', async () =>
   assert.match(app, /请选择使用类型/);
   assert.match(app, /completeIpadUsageEntry\(pendingIpadCompletion, new Date\(\)\.toISOString\(\), note\)/);
   assert.match(app, /getIpadDayStatus/);
+});
+
+test('ipad usage type management requires the household management password', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(html, /<dialog id="ipad-type-password-dialog"/);
+  assert.match(html, /id="ipad-type-password-form"/);
+  assert.match(app, /#ipad-type-password-dialog/);
+  assert.match(app, /password !== '123456'/);
 });
 
 test('completed ipad records expose duration and an overtime state', async () => {
