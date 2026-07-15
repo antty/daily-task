@@ -41,6 +41,16 @@ test('calendar provides a separate family switcher when more than one member exi
   assert.match(app, /data\.members\.length > 1/);
 });
 
+test('ipad management is an independent member-scoped dialog', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(html, /id="open-ipad-manager"/);
+  assert.match(html, /id="ipad-manager-dialog"/);
+  assert.match(html, /id="ipad-limit-options"/);
+  assert.match(html, /id="ipad-calendar-grid"/);
+  assert.match(app, /createIpadDailyLimit/);
+  assert.match(app, /getIpadDayStatus/);
+});
+
 test('small screens keep family switching and task management on one row', async () => {
   const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
   assert.match(css, /@media\(max-width:600px\)\{\.home-bar \.header-actions\{[^}]*flex-direction:row/);
