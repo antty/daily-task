@@ -63,6 +63,22 @@ test('ipad management collects a required type and completion note', async () =>
   assert.match(app, /getIpadDayStatus/);
 });
 
+test('ipad view resets its independent selected date when a member is switched', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(app, /ipadSelectedDate: today/);
+  assert.match(app, /function selectIpadMember\(id\)/);
+  assert.match(app, /state\.ipadSelectedDate = today/);
+});
+
+test('ipad calendar dates select the record date shown in the task pane', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(html, /id="ipad-record-date"/);
+  assert.match(app, /data-ipad-day/);
+  assert.match(app, /state\.ipadSelectedDate = day/);
+  assert.match(app, /item\.date === ipadSelectedDate/);
+  assert.match(app, /#ipad-calendar-grid'\)\.addEventListener\('click'/);
+});
+
 test('ipad usage type management requires the household management password', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(html, /<dialog id="ipad-type-password-dialog"/);
