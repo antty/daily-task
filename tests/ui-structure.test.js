@@ -100,6 +100,17 @@ test('completed ipad records expose duration and an overtime state', async () =>
   assert.match(app, /ipad-duration \$\{isOvertime/);
 });
 
+test('ipad daily overtime is rendered as a red summary alert and a strengthened calendar state', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(app, /ipad-summary-overtime/);
+  assert.match(app, /已超时 <strong>/);
+  assert.match(app, /aria-label="\$\{date\} \$\{status === 'overtime'/);
+  assert.match(css, /#ipad-summary\.overtime/);
+  assert.match(css, /\.ipad-summary-overtime/);
+  assert.match(css, /\.ipad-calendar-grid button\.overtime/);
+});
+
 test('ipad record content keeps its type and completion note on one compact line', async () => {
   const css = await readFile(new URL('../ipad.css', import.meta.url), 'utf8');
   assert.match(css, /\.ipad-record>div:first-child\{[^}]*white-space:nowrap/);
@@ -170,7 +181,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260716-1025"/);
+  assert.match(html, /src="src\/app\.js\?v=20260716-1035"/);
 });
 
 test('mobile ipad view hides home navigation and centers its own heading', async () => {

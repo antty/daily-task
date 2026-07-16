@@ -159,6 +159,62 @@
   box-shadow: 0 0 0 2px #e8dffc;
 }
 
+#ipad-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  border: 1px solid #d8eadf;
+  border-radius: 12px;
+  background: #f3fbf6;
+  color: #326a4b;
+  font-size: 13px;
+}
+
+#ipad-summary strong {
+  font-size: 16px;
+}
+
+#ipad-summary.overtime {
+  border-color: #f1bcc4;
+  background: linear-gradient(90deg, #fff5f6, #fffafa);
+  color: #8f2435;
+}
+
+.ipad-summary-overtime {
+  margin-left: auto;
+  padding: 5px 9px;
+  border: 1px solid #efb8c0;
+  border-radius: 999px;
+  background: #fff0f1;
+  color: #b3263c;
+  font-weight: 800;
+}
+
+.ipad-summary-remaining {
+  margin-left: auto;
+  font-weight: 700;
+}
+
+.ipad-calendar-grid button.overtime {
+  border-color: #efb8c0;
+  box-shadow: inset 0 0 0 1px #ffe1e5, 0 3px 8px #b3263c1a;
+  font-weight: 850;
+}
+
+@media (max-width: 600px) {
+  #ipad-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ipad-summary-overtime,
+  .ipad-summary-remaining {
+    margin-left: 0;
+  }
+}
+
 @media (max-width: 760px) {
   body:has(#ipad-view:not([hidden])) .home-bar {
     display: none;
