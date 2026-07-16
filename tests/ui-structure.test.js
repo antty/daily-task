@@ -1,8 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+
+test('the browser entry script has valid module syntax', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const result = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: app, encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+});
 
 test('the browser page title presents the habit-building product name', () => {
   assert.match(html, /<title>习惯养成<\/title>/);
