@@ -169,6 +169,10 @@ test('static assets use a release version to prevent stale mobile styles', () =>
   assert.match(html, /src="src\/app\.js\?v=/);
 });
 
+test('the browser entry script uses the current release version after a production fix', () => {
+  assert.match(html, /src="src\/app\.js\?v=20260716-1025"/);
+});
+
 test('mobile ipad view hides home navigation and centers its own heading', async () => {
   const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
   assert.match(css, /body:has\(#ipad-view:not\(\[hidden\]\)\) \.home-bar/);
