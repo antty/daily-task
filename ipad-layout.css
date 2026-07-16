@@ -130,6 +130,35 @@
   margin-top: 0;
 }
 
+.ipad-record-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 0 0 10px;
+}
+
+.ipad-record-heading .eyebrow {
+  margin: 0;
+}
+
+.ipad-record-heading h3 {
+  margin: 0;
+  color: #4a3b5c;
+  font-size: 15px;
+}
+
+.ipad-calendar-grid button {
+  min-width: 0;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.ipad-calendar-grid button.selected {
+  border-color: #7452ae;
+  box-shadow: 0 0 0 2px #e8dffc;
+}
+
 @media (max-width: 760px) {
   body:has(#ipad-view:not([hidden])) .home-bar {
     display: none;
