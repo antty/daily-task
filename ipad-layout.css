@@ -109,8 +109,8 @@
 
 .ipad-content-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.75fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(270px, 0.75fr);
+  gap: 16px;
   align-items: start;
 }
 
@@ -161,30 +161,55 @@
 }
 
 #ipad-summary {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 13px;
-  border: 1px solid #d8eadf;
-  border-radius: 12px;
-  background: #f3fbf6;
-  color: #326a4b;
-  font-size: 13px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 #ipad-summary[hidden] {
   display: none !important;
 }
 
-#ipad-summary strong {
+.ipad-metric {
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 15px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.ipad-metric span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--color-muted);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.ipad-metric strong {
+  color: var(--color-foreground);
   font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ipad-metric.is-danger {
+  border-color: #edc0c6;
+  background: #fff4f5;
+}
+
+.ipad-metric.is-danger strong {
+  color: var(--color-danger);
 }
 
 #ipad-summary.overtime {
-  border-color: #f1bcc4;
-  background: linear-gradient(90deg, #fff5f6, #fffafa);
-  color: #8f2435;
-  box-shadow: 0 10px 24px #b43f5218;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .ipad-summary-overtime {
@@ -210,14 +235,25 @@
 
 @media (max-width: 600px) {
   #ipad-summary {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .ipad-summary-overtime,
   .ipad-summary-remaining {
     margin-left: 0;
+  }
+
+  .ipad-calendar-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .ipad-calendar-grid button,
+  .ipad-calendar-grid span {
+    min-width: 0;
+    min-height: 38px;
+    padding: 5px 2px;
+    font-size: 10px;
   }
 }
 
@@ -263,4 +299,12 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
+
+  .ipad-calendar-section { order: -1; }
+}
+
+.ipad-record-time,
+.ipad-running-duration,
+.ipad-duration {
+  font-variant-numeric: tabular-nums;
 }

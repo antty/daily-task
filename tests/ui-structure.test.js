@@ -147,7 +147,7 @@ test('ipad daily overtime is rendered as a red summary alert and a strengthened 
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
   assert.match(app, /ipad-summary-overtime/);
-  assert.match(app, /已超时 <strong>/);
+  assert.match(app, /summary\.isOvertime \? '已超时' : '剩余'/);
   assert.match(app, /aria-label="\$\{date\} \$\{status === 'overtime'/);
   assert.match(css, /#ipad-summary\.overtime/);
   assert.match(css, /\.ipad-summary-overtime/);
@@ -405,4 +405,13 @@ test('dialogs share labeled fields, accessible close controls, and mobile sheets
   assert.match(app, /\[data-password-toggle\]/);
   assert.match(css, /\.manager-dialog::backdrop\s*\{[^}]*rgba\(35,\s*28,\s*42,\s*\.52\)/);
   assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.manager-dialog\s*\{[^}]*margin:\s*auto 12px 12px/);
+});
+
+test('ipad page exposes metric cards and a complete mobile calendar', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(app, /ipad-metric/);
+  assert.match(app, /今日记录/);
+  assert.match(css, /\.ipad-content-layout\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1\.25fr\)/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.ipad-calendar-grid\s*\{[^}]*grid-template-columns:\s*repeat\(7,\s*1fr\)/);
 });
