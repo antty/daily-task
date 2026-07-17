@@ -386,3 +386,12 @@ test('lavender design tokens and accessible motion rules are present', async () 
   assert.match(interaction, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.match(interaction, /:focus-visible/);
 });
+
+test('home navigation uses accessible svg icons and responsive hierarchy', async () => {
+  const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
+  assert.match(html, /id="open-ipad-manager"[\s\S]*?<svg[^>]*aria-hidden="true"/);
+  assert.match(html, /id="open-manage"[\s\S]*?<svg[^>]*aria-hidden="true"/);
+  assert.doesNotMatch(html, /<span aria-hidden="true">(?:◷|⇄|☷)<\/span>/);
+  assert.match(css, /\.home-bar\s*\{[^}]*grid-template-columns:/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.home-layout\s*\{[^}]*grid-template-columns:\s*1fr/);
+});
