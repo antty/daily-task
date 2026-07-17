@@ -105,5 +105,16 @@ $('#ipad-entry-list').onclick = (event) => { const id = event.target.dataset.ipa
 $('#ipad-completion-form').onsubmit = (event) => { event.preventDefault(); const note = new FormData(event.currentTarget).get('ipad-completion-note').trim(); store.completeIpadUsageEntry(pendingIpadCompletion, new Date().toISOString(), note); $('#ipad-completion-dialog').close(); renderIpad(); showToast('使用记录已完成。'); };
 $('#open-ipad-type-dialog').onclick = () => { $('#ipad-type-password-form').reset(); $('#ipad-type-password-error').hidden = true; $('#ipad-type-password-dialog').showModal(); };
 $('#ipad-type-password-form').onsubmit = async (event) => { event.preventDefault(); await verifyManagementPassword(event.currentTarget, $('#ipad-type-password-error'), '进入使用类型管理', () => { $('#ipad-type-password-dialog').close(); renderIpad(); $('#ipad-type-dialog').showModal(); }); };
+
+document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+  button.addEventListener('click', () => {
+    const input = button.closest('.password-field')?.querySelector('input');
+    if (!input) return;
+    const showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    button.textContent = showing ? '显示' : '隐藏';
+    button.setAttribute('aria-label', showing ? '显示密码' : '隐藏密码');
+  });
+});
 $('#ipad-type-form').onsubmit = (event) => { event.preventDefault(); const form = new FormData(event.currentTarget); const name = form.get('name').trim(); if (name && state.memberId) store.addIpadUsageType(state.memberId, name, form.get('counts') === 'on'); event.currentTarget.reset(); renderIpad(); };
 $('#ipad-type-list').onclick = (event) => { const id = event.target.dataset.ipadDeleteType; if (id && confirm('删除该使用类型？已有记录会保留。')) { store.deleteIpadUsageType(id); renderIpad(); } };

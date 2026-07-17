@@ -123,3 +123,104 @@ body{background:url('assets/motivation-background.png') center top / cover fixed
   .home-layout { grid-template-columns: 1fr; }
   .compact-home .calendar, .compact-home .tasks { padding: 16px; }
 }
+
+/* Shared dialog and form system */
+.manager-dialog {
+  width: min(600px, calc(100vw - 32px));
+  max-height: min(88dvh, 760px);
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 80%);
+  border-radius: 24px;
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  box-shadow: var(--shadow-dialog);
+  overflow: auto;
+}
+
+.manager-dialog::backdrop {
+  background: rgba(35, 28, 42, .52);
+  backdrop-filter: blur(3px);
+}
+
+.manager-dialog > .dialog-head,
+.manager-dialog > .manage-top {
+  margin: 0;
+  padding: 20px 24px 15px;
+  border-bottom: 1px solid var(--color-border);
+  background: rgb(255 255 255 / 94%);
+}
+
+.manager-dialog .dialog-head h2 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
+.manager-dialog .dialog-head p { margin: 5px 0 0; color: var(--color-muted); font-size: 12px; font-weight: 500; }
+.manager-dialog > p,
+.manager-dialog > section:not(.managed-tasks),
+.manager-dialog > .manage-list,
+.manager-dialog > form:not(.dialog-body),
+.dialog-body { margin: 0; padding: 18px 24px 22px; }
+.dialog-body { display: grid; gap: 14px; }
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin: 4px -24px -22px;
+  padding: 15px 24px 20px;
+  border-top: 1px solid var(--color-border);
+}
+.form-field { display: grid; gap: 7px; color: var(--color-foreground); }
+.field-label { color: #574d60; font-size: 12px; font-weight: 750; }
+.password-field { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.password-field input { grid-area: 1 / 1; padding-right: 64px; }
+.password-toggle {
+  grid-area: 1 / 1;
+  justify-self: end;
+  width: 56px;
+  min-height: 36px;
+  margin-right: 5px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--color-primary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.password-toggle:hover { background: var(--color-surface-soft); }
+.dialog-close-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  padding: 0;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 14px;
+  background: var(--color-surface) !important;
+  color: var(--color-muted) !important;
+  font-size: 22px !important;
+}
+.dialog-close-icon span { display: block; line-height: 1; transform: none; }
+
+.task-manager-dialog { width: min(980px, calc(100vw - 32px)); }
+.task-manager-dialog > .managed-tasks { margin: 0; padding: 12px 24px 22px; border: 0; box-shadow: none; }
+.danger-button { background: var(--color-danger); border-radius: var(--radius-control); }
+
+@media (max-width: 600px) {
+  .manager-dialog {
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    margin: auto 12px 12px;
+    border-radius: 24px;
+  }
+  .manager-dialog > .dialog-head,
+  .manager-dialog > .manage-top { padding: 18px 18px 13px; }
+  .manager-dialog > p,
+  .manager-dialog > section:not(.managed-tasks),
+  .manager-dialog > .manage-list,
+  .manager-dialog > form:not(.dialog-body),
+  .dialog-body { padding: 16px 18px 18px; }
+  .dialog-footer { margin: 2px -18px -18px; padding: 13px 18px calc(15px + env(safe-area-inset-bottom)); }
+  .dialog-footer > button { min-width: 0; }
+  .task-manager-dialog > .managed-tasks { padding: 8px 18px 18px; }
+}

@@ -395,3 +395,14 @@ test('home navigation uses accessible svg icons and responsive hierarchy', async
   assert.match(css, /\.home-bar\s*\{[^}]*grid-template-columns:/);
   assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.home-layout\s*\{[^}]*grid-template-columns:\s*1fr/);
 });
+
+test('dialogs share labeled fields, accessible close controls, and mobile sheets', async () => {
+  const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(html, /class="[^"]*dialog-body/);
+  assert.match(html, /class="[^"]*dialog-footer/);
+  assert.match(html, /data-password-toggle/);
+  assert.match(app, /\[data-password-toggle\]/);
+  assert.match(css, /\.manager-dialog::backdrop\s*\{[^}]*rgba\(35,\s*28,\s*42,\s*\.52\)/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.manager-dialog\s*\{[^}]*margin:\s*auto 12px 12px/);
+});
