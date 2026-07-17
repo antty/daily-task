@@ -45,3 +45,182 @@ body{background:url('assets/motivation-background.png') center top / cover fixed
 .manage-row,.ipad-record{border-radius:var(--radius-sm)}
 .manage-row:hover,.ipad-record:hover{background:var(--surface-soft)}
 @media(max-width:600px){.manager-dialog{width:calc(100vw - 24px);max-height:calc(100dvh - 24px);padding:20px 18px}.task-form-actions{flex-wrap:wrap}.task-form-actions .primary{min-width:132px}.home-bar,.ipad-content-layout{max-width:100%;min-width:0}.dialog-head-actions{gap:2px}.password-change-entry{font-size:11px;padding:7px 5px}}
+
+/* Lavender home workspace */
+.home-bar {
+  display: grid;
+  grid-template-columns: auto minmax(220px, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: rgb(255 255 255 / 86%);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+}
+
+.home-bar .member-profile {
+  min-height: 44px;
+  padding: 5px 12px 5px 5px;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.home-bar .header-actions { gap: 8px; }
+.home-bar .icon-entry {
+  width: 44px;
+  height: 44px;
+  border-color: var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+.home-bar .icon-entry:hover { border-color: #d5c8df; background: var(--color-surface-soft); transform: none; }
+.app-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.home-bar .inline-motivation { min-width: 0; padding: 4px 12px; }
+.home-bar .inline-motivation h2 { font-size: 15px; color: var(--color-foreground); }
+.home-bar .inline-motivation p { font-size: 12px; color: var(--color-muted); }
+
+.compact-home { grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr); gap: 16px; }
+.compact-home .calendar, .compact-home .tasks { padding: 20px; }
+.compact-home .task {
+  gap: 10px;
+  margin-bottom: 9px;
+  padding: 12px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--color-surface-soft);
+}
+.compact-home .task:last-child { margin-bottom: 0; }
+.compact-home .complete { width: 24px; height: 24px; border-color: #c5b8d3; }
+.compact-home .done .complete { background: var(--color-success); border-color: var(--color-success); }
+
+@media (max-width: 900px) {
+  .compact-home { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .home-bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px;
+  }
+  .home-bar .header-actions { justify-self: end; gap: 6px; }
+  .home-bar .header-actions .icon-entry { width: 44px; height: 44px; }
+  .home-bar .inline-motivation {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 10px 12px;
+    border-radius: 13px;
+    background: var(--color-surface-soft);
+  }
+  .home-bar .inline-motivation > div { display: grid; gap: 2px; }
+  .home-bar .inline-motivation h2, .home-bar .inline-motivation p { white-space: normal; }
+  .home-layout { grid-template-columns: 1fr; }
+  .compact-home .calendar, .compact-home .tasks { padding: 16px; }
+}
+
+/* Shared dialog and form system */
+.manager-dialog {
+  width: min(600px, calc(100vw - 32px));
+  max-height: min(88dvh, 760px);
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 80%);
+  border-radius: 24px;
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  box-shadow: var(--shadow-dialog);
+  overflow: auto;
+}
+
+.manager-dialog::backdrop {
+  background: rgba(35, 28, 42, .52);
+  backdrop-filter: blur(3px);
+}
+
+.manager-dialog > .dialog-head,
+.manager-dialog > .manage-top {
+  margin: 0;
+  padding: 20px 24px 15px;
+  border-bottom: 1px solid var(--color-border);
+  background: rgb(255 255 255 / 94%);
+}
+
+.manager-dialog .dialog-head h2 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
+.manager-dialog .dialog-head p { margin: 5px 0 0; color: var(--color-muted); font-size: 12px; font-weight: 500; }
+.manager-dialog > p,
+.manager-dialog > section:not(.managed-tasks),
+.manager-dialog > .manage-list,
+.manager-dialog > form:not(.dialog-body),
+.dialog-body { margin: 0; padding: 18px 24px 22px; }
+.dialog-body { display: grid; gap: 14px; }
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin: 4px -24px -22px;
+  padding: 15px 24px 20px;
+  border-top: 1px solid var(--color-border);
+}
+.form-field { display: grid; gap: 7px; color: var(--color-foreground); }
+.field-label { color: #574d60; font-size: 12px; font-weight: 750; }
+.password-field { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.password-field input { grid-area: 1 / 1; padding-right: 64px; }
+.password-toggle {
+  grid-area: 1 / 1;
+  justify-self: end;
+  width: 56px;
+  min-height: 36px;
+  margin-right: 5px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--color-primary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.password-toggle:hover { background: var(--color-surface-soft); }
+.dialog-close-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  padding: 0;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 14px;
+  background: var(--color-surface) !important;
+  color: var(--color-muted) !important;
+  font-size: 22px !important;
+}
+.dialog-close-icon span { display: block; line-height: 1; transform: none; }
+
+.task-manager-dialog { width: min(980px, calc(100vw - 32px)); }
+.task-manager-dialog > .managed-tasks { margin: 0; padding: 12px 24px 22px; border: 0; box-shadow: none; }
+.danger-button { background: var(--color-danger); border-radius: var(--radius-control); }
+
+@media (max-width: 600px) {
+  .manager-dialog {
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    margin: auto 12px 12px;
+    border-radius: 24px;
+  }
+  .manager-dialog > .dialog-head,
+  .manager-dialog > .manage-top { padding: 18px 18px 13px; }
+  .manager-dialog > p,
+  .manager-dialog > section:not(.managed-tasks),
+  .manager-dialog > .manage-list,
+  .manager-dialog > form:not(.dialog-body),
+  .dialog-body { padding: 16px 18px 18px; }
+  .dialog-footer { margin: 2px -18px -18px; padding: 13px 18px calc(15px + env(safe-area-inset-bottom)); }
+  .dialog-footer > button { min-width: 0; }
+  .task-manager-dialog > .managed-tasks { padding: 8px 18px 18px; }
+}

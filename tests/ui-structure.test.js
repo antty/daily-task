@@ -147,7 +147,7 @@ test('ipad daily overtime is rendered as a red summary alert and a strengthened 
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
   assert.match(app, /ipad-summary-overtime/);
-  assert.match(app, /已超时 <strong>/);
+  assert.match(app, /summary\.isOvertime \? '已超时' : '剩余'/);
   assert.match(app, /aria-label="\$\{date\} \$\{status === 'overtime'/);
   assert.match(css, /#ipad-summary\.overtime/);
   assert.match(css, /\.ipad-summary-overtime/);
@@ -224,7 +224,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260717-visual-password"/);
+  assert.match(html, /src="src\/app\.js\?v=20260717-lavender-ui"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -234,7 +234,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260717-visual-password']);
+  assert.deepEqual([...new Set(versions)], ['20260717-lavender-ui']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -375,4 +375,50 @@ test('future task dates stay unmarked and completion uploads have a preview', as
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(app, /date > today/);
   assert.match(html, /id="completion-image-preview"/);
+});
+
+test('lavender design tokens and accessible motion rules are present', async () => {
+  const base = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  const interaction = await readFile(new URL('../interaction.css', import.meta.url), 'utf8');
+  assert.match(base, /--color-primary:\s*#6d55a6/i);
+  assert.match(base, /--color-background:\s*#f7f4fb/i);
+  assert.match(base, /--control-height:\s*44px/i);
+  assert.match(interaction, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.match(interaction, /:focus-visible/);
+});
+
+test('home navigation uses accessible svg icons and responsive hierarchy', async () => {
+  const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
+  assert.match(html, /id="open-ipad-manager"[\s\S]*?<svg[^>]*aria-hidden="true"/);
+  assert.match(html, /id="open-manage"[\s\S]*?<svg[^>]*aria-hidden="true"/);
+  assert.doesNotMatch(html, /<span aria-hidden="true">(?:◷|⇄|☷)<\/span>/);
+  assert.match(css, /\.home-bar\s*\{[^}]*grid-template-columns:/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.home-layout\s*\{[^}]*grid-template-columns:\s*1fr/);
+});
+
+test('dialogs share labeled fields, accessible close controls, and mobile sheets', async () => {
+  const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(html, /class="[^"]*dialog-body/);
+  assert.match(html, /class="[^"]*dialog-footer/);
+  assert.match(html, /data-password-toggle/);
+  assert.match(app, /\[data-password-toggle\]/);
+  assert.match(css, /\.manager-dialog::backdrop\s*\{[^}]*rgba\(35,\s*28,\s*42,\s*\.52\)/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.manager-dialog\s*\{[^}]*margin:\s*auto 12px 12px/);
+});
+
+test('ipad page exposes metric cards and a complete mobile calendar', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(app, /ipad-metric/);
+  assert.match(app, /今日记录/);
+  assert.match(css, /\.ipad-content-layout\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1\.25fr\)/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.ipad-page-panel \.ipad-calendar-grid\s*\{[^}]*grid-template-columns:\s*repeat\(7,\s*1fr\)/);
+});
+
+test('lavender refresh uses one cache version across every frontend asset', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
+  assert.equal(new Set(versions).size, 1);
+  assert.equal(versions[0], '20260717-lavender-ui');
 });
