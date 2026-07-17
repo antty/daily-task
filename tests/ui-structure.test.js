@@ -30,6 +30,14 @@ test('management passwords are private, hashed, and accessed through restricted 
   }
 });
 
+test('the Supabase store delegates password operations to restricted RPCs', async () => {
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  assert.match(store, /verifyManagementPassword\(password\)/);
+  assert.match(store, /rpc\('verify_household_management_password'/);
+  assert.match(store, /changeManagementPassword\(currentPassword, newPassword\)/);
+  assert.match(store, /rpc\('change_household_management_password'/);
+});
+
 test('family management is only available from the pre-entry dialog behind a password step', () => {
   const home = html.match(/<section id="home-view"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(home, /open-member-dialog/);
