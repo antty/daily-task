@@ -224,7 +224,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260717-visual-password"/);
+  assert.match(html, /src="src\/app\.js\?v=20260717-lavender-ui"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -234,7 +234,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260717-visual-password']);
+  assert.deepEqual([...new Set(versions)], ['20260717-lavender-ui']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -413,5 +413,12 @@ test('ipad page exposes metric cards and a complete mobile calendar', async () =
   assert.match(app, /ipad-metric/);
   assert.match(app, /今日记录/);
   assert.match(css, /\.ipad-content-layout\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1\.25fr\)/);
-  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.ipad-calendar-grid\s*\{[^}]*grid-template-columns:\s*repeat\(7,\s*1fr\)/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.ipad-page-panel \.ipad-calendar-grid\s*\{[^}]*grid-template-columns:\s*repeat\(7,\s*1fr\)/);
+});
+
+test('lavender refresh uses one cache version across every frontend asset', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
+  assert.equal(new Set(versions).size, 1);
+  assert.equal(versions[0], '20260717-lavender-ui');
 });

@@ -244,7 +244,7 @@
     margin-left: 0;
   }
 
-  .ipad-calendar-grid {
+  .ipad-page-panel .ipad-calendar-grid {
     grid-template-columns: repeat(7, 1fr);
   }
 
