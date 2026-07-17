@@ -114,7 +114,25 @@ test('ipad usage type management requires the household management password', as
   assert.match(html, /<dialog id="ipad-type-password-dialog"/);
   assert.match(html, /id="ipad-type-password-form"/);
   assert.match(app, /#ipad-type-password-dialog/);
-  assert.match(app, /password !== '123456'/);
+  assert.doesNotMatch(app, /password\s*!==\s*'123456'/);
+  assert.match(app, /await store\.verifyManagementPassword\(password\)/);
+});
+
+test('protected management dialogs verify through the shared store API', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(app, /password\s*!==\s*'123456'/);
+  assert.match(app, /await store\.verifyManagementPassword\(password\)/);
+  assert.match(app, /#family-password-form/);
+  assert.match(app, /#ipad-type-password-form/);
+});
+
+test('family management exposes a validated password-change flow', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(html, /id="open-change-family-password"/);
+  assert.match(html, /id="change-password-dialog"/);
+  assert.match(html, /id="change-password-form"/);
+  assert.match(app, /validatePasswordChange/);
+  assert.match(app, /await store\.changeManagementPassword/);
 });
 
 test('completed ipad records expose duration and an overtime state', async () => {
