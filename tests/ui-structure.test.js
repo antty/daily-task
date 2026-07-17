@@ -224,7 +224,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260717-lavender-ui"/);
+  assert.match(html, /src="src\/app\.js\?v=20260718-dialog-spacing"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -234,7 +234,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260717-lavender-ui']);
+  assert.deepEqual([...new Set(versions)], ['20260718-dialog-spacing']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -420,5 +420,35 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260717-lavender-ui');
+  assert.equal(versions[0], '20260718-dialog-spacing');
+});
+
+test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
+  const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
+  assert.match(css, /\.manager-dialog:focus-visible\s*\{[^}]*outline:\s*none/);
+  assert.match(css, /\.gate-dialog\s*\{[^}]*width:\s*min\(460px,\s*calc\(100vw - 24px\)\)[^}]*padding:\s*22px 24px 24px/);
+  assert.match(css, /\.member-switch-dialog\s*\{[^}]*width:\s*min\(480px,\s*calc\(100vw - 24px\)\)/);
+  assert.match(css, /\.member-switch-dialog > p\s*\{[^}]*padding:\s*16px 24px 0/);
+  assert.match(css, /\.member-switch-dialog > \.member-switch-list\s*\{[^}]*padding:\s*12px 24px 24px/);
+  assert.match(css, /@media\s*\(max-height:\s*560px\)[\s\S]*\.gate-dialog,[\s\S]*\.member-switch-dialog\s*\{[^}]*margin:\s*auto/);
+});
+
+test('every dialog variant keeps an intentional width and content rhythm', async () => {
+  const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
+  assert.match(css, /\.manager-dialog\s*\{[^}]*width:\s*min\(var\(--dialog-width,\s*600px\),\s*calc\(100vw - 24px\)\)/);
+  assert.match(css, /\.task-manager-dialog\s*\{[^}]*--dialog-width:\s*980px/);
+  assert.match(css, /\.task-composer-dialog\s*\{[^}]*--dialog-width:\s*680px/);
+  assert.match(css, /\.task-detail-dialog\s*\{[^}]*--dialog-width:\s*520px/);
+  assert.match(css, /\.task-detail-dialog > \.detail-meta\s*\{[^}]*padding:\s*16px 24px 0/);
+  assert.match(css, /\.task-detail-dialog > \.detail-description\s*\{[^}]*margin:\s*12px 24px 0[^}]*padding:\s*14px 16px/);
+  assert.match(css, /\.manager-dialog\.task-detail-dialog > \.detail-completion\s*\{[^}]*margin:\s*12px 24px 24px[^}]*padding:\s*16px/);
+  assert.match(css, /\.undo-dialog,[\s\S]*\.delete-dialog\s*\{[^}]*padding:\s*24px/);
+  assert.match(css, /\.join-family-dialog > p\s*\{[^}]*padding:\s*16px 24px 0/);
+  assert.match(css, /\.dialog-head > \[data-close-dialog\]\s*\{[^}]*min-height:\s*44px/);
+});
+
+test('selected task calendar date stays visible over completion state backgrounds', async () => {
+  const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
+  assert.match(css, /\.compact-home \.day\.selected\s*\{[^}]*background:\s*#f0e9fb[^}]*box-shadow:\s*inset 0 0 0 2px var\(--color-primary\)/);
+  assert.match(css, /\.compact-home \.day\.selected b\s*\{[^}]*color:\s*var\(--color-primary-strong\)/);
 });

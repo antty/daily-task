@@ -224,3 +224,180 @@ body{background:url('assets/motivation-background.png') center top / cover fixed
   .dialog-footer > button { min-width: 0; }
   .task-manager-dialog > .managed-tasks { padding: 8px 18px 18px; }
 }
+
+/* Member dialogs keep their own rhythm after the shared dialog reset. */
+.manager-dialog:focus-visible {
+  outline: none;
+}
+
+.gate-dialog {
+  width: min(460px, calc(100vw - 24px));
+  max-width: 460px;
+  padding: 22px 24px 24px;
+  text-align: center;
+}
+
+.gate-dialog .gate-head {
+  margin: 0 0 12px;
+}
+
+.gate-dialog h2 {
+  margin: 0;
+}
+
+.gate-dialog > p:not(.eyebrow) {
+  margin: 8px 0 18px;
+  padding: 0;
+}
+
+.gate-dialog > .member-gate-list {
+  margin: 0;
+  padding: 0;
+}
+
+.member-switch-dialog {
+  width: min(480px, calc(100vw - 24px));
+  max-width: 480px;
+  padding: 0;
+}
+
+.member-switch-dialog > p {
+  margin: 0;
+  padding: 16px 24px 0;
+}
+
+.member-switch-dialog > .member-switch-list {
+  margin: 0;
+  padding: 12px 24px 24px;
+}
+
+@media (max-width: 600px) {
+  .gate-dialog {
+    margin: auto;
+    padding: 18px;
+  }
+
+  .gate-dialog .gate-head { margin-bottom: 8px; }
+  .gate-dialog h2 { font-size: 21px; }
+  .gate-dialog > p:not(.eyebrow) { margin: 6px 0 14px; }
+  .member-switch-dialog > p { padding: 14px 18px 0; }
+  .member-switch-dialog > .member-switch-list { padding: 10px 18px 18px; }
+}
+
+@media (max-height: 560px) {
+  .gate-dialog,
+  .member-switch-dialog {
+    max-height: calc(100dvh - 24px);
+    margin: auto;
+    border-radius: 20px;
+  }
+
+  .gate-dialog { padding: 14px 18px 16px; }
+  .gate-dialog .gate-head { margin-bottom: 4px; }
+  .gate-dialog h2 { font-size: 20px; }
+  .gate-dialog > p:not(.eyebrow) { margin: 4px 0 10px; font-size: 13px; }
+  .member-choice,
+  .member-switch-choice { min-height: 50px; padding-block: 8px; }
+  .member-switch-dialog > .dialog-head { padding-block: 14px 10px; }
+  .member-switch-dialog > p { padding-top: 10px; }
+  .member-switch-dialog > .member-switch-list { padding-top: 8px; padding-bottom: 14px; }
+}
+
+/* Dialog size ownership: each flow keeps its intended reading width. */
+.manager-dialog {
+  width: min(var(--dialog-width, 600px), calc(100vw - 24px));
+}
+
+.task-manager-dialog { --dialog-width: 980px; }
+.task-composer-dialog { --dialog-width: 680px; }
+#member-dialog { --dialog-width: 500px; }
+.gate-dialog { --dialog-width: 460px; }
+.member-switch-dialog { --dialog-width: 480px; }
+.password-dialog,
+.join-family-dialog,
+.avatar-editor-dialog,
+.type-manager-dialog,
+#ipad-entry-dialog,
+#ipad-completion-dialog { --dialog-width: 430px; }
+#ipad-type-dialog,
+.completion-dialog { --dialog-width: 500px; }
+.undo-dialog { --dialog-width: 440px; }
+.delete-dialog { --dialog-width: 460px; }
+.task-detail-dialog { --dialog-width: 520px; }
+
+.dialog-head > [data-close-dialog] {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.join-family-dialog > p {
+  margin: 0;
+  padding: 16px 24px 0;
+}
+
+.join-family-dialog > form {
+  padding-top: 14px;
+}
+
+.task-detail-dialog > .detail-meta {
+  margin: 0;
+  padding: 16px 24px 0;
+}
+
+.task-detail-dialog > .detail-description {
+  margin: 12px 24px 0;
+  padding: 14px 16px;
+}
+
+.manager-dialog.task-detail-dialog > .detail-completion {
+  margin: 12px 24px 24px;
+  padding: 16px;
+}
+
+.task-detail-dialog .detail-completion img {
+  max-height: min(38dvh, 260px);
+}
+
+.undo-dialog,
+.delete-dialog {
+  padding: 24px;
+}
+
+.undo-dialog > p,
+.delete-dialog > p {
+  margin: 6px 0 18px;
+  padding: 0;
+}
+
+@media (max-width: 600px) {
+  .task-detail-dialog > .detail-meta { padding: 14px 18px 0; }
+  .task-detail-dialog > .detail-description { margin: 10px 18px 0; padding: 12px 14px; }
+  .manager-dialog.task-detail-dialog > .detail-completion { margin: 10px 18px 18px; padding: 14px; }
+  .join-family-dialog > p { padding: 14px 18px 0; }
+  .undo-dialog,
+  .delete-dialog { padding: 20px 18px; }
+}
+
+@media (max-height: 560px) {
+  .task-detail-dialog,
+  .undo-dialog,
+  .delete-dialog {
+    max-height: calc(100dvh - 24px);
+    margin: auto;
+  }
+
+  .task-detail-dialog .detail-completion img {
+    max-height: min(32dvh, 210px);
+  }
+}
+
+/* Selection remains visible regardless of the day's task status. */
+.compact-home .day.selected {
+  background: #f0e9fb;
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.compact-home .day.selected b {
+  color: var(--color-primary-strong);
+}
