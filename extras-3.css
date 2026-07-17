@@ -400,13 +400,57 @@ body{background:url('assets/motivation-background.png') center top / cover fixed
 
 .compact-home .day.selected b {
   display: inline-grid;
+  position: absolute;
+  top: 6px;
+  left: 6px;
   min-width: 24px;
   height: 24px;
-  margin: -2px 0 0 -1px;
+  margin: 0;
   padding: 0 6px;
   place-items: center;
   border-radius: 8px;
   background: var(--color-primary);
   color: #fff;
   box-shadow: 0 3px 8px rgb(85 64 143 / 22%);
+}
+
+/* Keep task state independent from the selected date badge. */
+.compact-home .day .calendar-status {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  margin: 0;
+}
+
+.compact-home .day .calendar-status.has-task,
+.compact-home .day .calendar-status.idle {
+  right: 8px;
+  bottom: 8px;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .compact-home .day.selected b {
+    min-width: 20px;
+    height: 20px;
+    top: 5px;
+    left: 5px;
+    padding: 0 4px;
+    border-radius: 6px;
+    font-size: 11px;
+  }
+
+  .compact-home .day .calendar-status {
+    width: 15px;
+    height: 15px;
+    right: 4px;
+    bottom: 4px;
+    font-size: 9px;
+  }
+
+  .compact-home .day .calendar-status.has-task,
+  .compact-home .day .calendar-status.idle {
+    right: 4px;
+    bottom: 4px;
+  }
 }
