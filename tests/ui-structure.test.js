@@ -376,3 +376,13 @@ test('future task dates stay unmarked and completion uploads have a preview', as
   assert.match(app, /date > today/);
   assert.match(html, /id="completion-image-preview"/);
 });
+
+test('lavender design tokens and accessible motion rules are present', async () => {
+  const base = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  const interaction = await readFile(new URL('../interaction.css', import.meta.url), 'utf8');
+  assert.match(base, /--color-primary:\s*#6d55a6/i);
+  assert.match(base, /--color-background:\s*#f7f4fb/i);
+  assert.match(base, /--control-height:\s*44px/i);
+  assert.match(interaction, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.match(interaction, /:focus-visible/);
+});
