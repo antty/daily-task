@@ -15,6 +15,21 @@ test('the browser page title presents the habit-building product name', () => {
   assert.match(html, /<title>习惯养成<\/title>/);
 });
 
+test('management passwords are private, hashed, and accessed through restricted RPCs', async () => {
+  const migration = await readFile(new URL('../supabase/management-password-migration.sql', import.meta.url), 'utf8');
+  const schema = await readFile(new URL('../supabase/schema.sql', import.meta.url), 'utf8');
+  for (const sql of [migration, schema]) {
+    assert.match(sql, /create schema if not exists private/);
+    assert.match(sql, /private\.household_management_secrets/);
+    assert.match(sql, /crypt\('123456',\s*(?:public\.)?gen_salt\('bf'/);
+    assert.match(sql, /verify_household_management_password/);
+    assert.match(sql, /change_household_management_password/);
+    assert.match(sql, /security definer set search_path = ''/);
+    assert.match(sql, /revoke execute[^;]+from public, anon/);
+    assert.match(sql, /grant execute[^;]+to authenticated/);
+  }
+});
+
 test('family management is only available from the pre-entry dialog behind a password step', () => {
   const home = html.match(/<section id="home-view"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(home, /open-member-dialog/);
