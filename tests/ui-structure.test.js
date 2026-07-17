@@ -224,7 +224,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260718-dialog-spacing"/);
+  assert.match(html, /src="src\/app\.js\?v=20260718-state-polish"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -234,7 +234,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260718-dialog-spacing']);
+  assert.deepEqual([...new Set(versions)], ['20260718-state-polish']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -420,7 +420,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260718-dialog-spacing');
+  assert.equal(versions[0], '20260718-state-polish');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
@@ -449,6 +449,13 @@ test('every dialog variant keeps an intentional width and content rhythm', async
 
 test('selected task calendar date stays visible over completion state backgrounds', async () => {
   const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
-  assert.match(css, /\.compact-home \.day\.selected\s*\{[^}]*background:\s*#f0e9fb[^}]*box-shadow:\s*inset 0 0 0 2px var\(--color-primary\)/);
-  assert.match(css, /\.compact-home \.day\.selected b\s*\{[^}]*color:\s*var\(--color-primary-strong\)/);
+  assert.match(css, /\.compact-home \.day\.selected\s*\{[^}]*background:\s*linear-gradient\([^}]*box-shadow:\s*inset 0 0 0 1px/);
+  assert.match(css, /\.compact-home \.day\.selected b\s*\{[^}]*display:\s*inline-grid[^}]*background:\s*var\(--color-primary\)[^}]*color:\s*#fff/);
+  assert.doesNotMatch(css, /\.compact-home \.day\.selected\s*\{[^}]*inset 0 0 0 2px/);
+});
+
+test('ipad overtime metric keeps the same card geometry as sibling metrics', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(css, /\.ipad-metric\.ipad-summary-overtime\s*\{[^}]*margin-left:\s*0[^}]*border-radius:\s*15px/);
+  assert.doesNotMatch(css, /\.ipad-metric\.ipad-summary-overtime\s*\{[^}]*border-radius:\s*999px/);
 });

@@ -394,10 +394,19 @@ body{background:url('assets/motivation-background.png') center top / cover fixed
 
 /* Selection remains visible regardless of the day's task status. */
 .compact-home .day.selected {
-  background: #f0e9fb;
-  box-shadow: inset 0 0 0 2px var(--color-primary);
+  background: linear-gradient(145deg, #f7f3fc, #fff);
+  box-shadow: inset 0 0 0 1px #cbbbe1, 0 4px 12px rgb(83 60 117 / 10%);
 }
 
 .compact-home .day.selected b {
-  color: var(--color-primary-strong);
+  display: inline-grid;
+  min-width: 24px;
+  height: 24px;
+  margin: -2px 0 0 -1px;
+  padding: 0 6px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 3px 8px rgb(85 64 143 / 22%);
 }
