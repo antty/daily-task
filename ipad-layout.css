@@ -124,6 +124,7 @@
   border: 1px solid #eee6f5;
   border-radius: 14px;
   background: #fcfaff;
+  box-shadow: var(--shadow-soft);
 }
 
 .ipad-calendar-section .ipad-calendar-head {
@@ -171,6 +172,10 @@
   font-size: 13px;
 }
 
+#ipad-summary[hidden] {
+  display: none !important;
+}
+
 #ipad-summary strong {
   font-size: 16px;
 }
@@ -179,6 +184,7 @@
   border-color: #f1bcc4;
   background: linear-gradient(90deg, #fff5f6, #fffafa);
   color: #8f2435;
+  box-shadow: 0 10px 24px #b43f5218;
 }
 
 .ipad-summary-overtime {

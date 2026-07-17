@@ -1,4 +1,5 @@
 import { toDateKey } from './task-domain.js';
+import { getManagementPasswordError } from './management-password.js';
 
 const KEY = 'daily-task-family-v1';
 
@@ -17,10 +18,18 @@ const clone = (value) => structuredClone(value);
 
 export function createStore({ seedDemo = false } = {}) {
   let state = load(seedDemo);
+  let managementPassword = '123456';
   const listeners = new Set();
   const save = () => { localStorage.setItem(KEY, JSON.stringify(state)); listeners.forEach((listener) => listener(clone(state))); };
   return {
     getState: () => clone(state),
+    async verifyManagementPassword(password) { return String(password ?? '') === managementPassword; },
+    async changeManagementPassword(currentPassword, newPassword) {
+      if (String(currentPassword ?? '') !== managementPassword) return 'invalid_current';
+      if (getManagementPasswordError(newPassword)) return 'invalid_new';
+      managementPassword = String(newPassword);
+      return 'ok';
+    },
     replaceState(nextState) { state = clone(nextState); save(); },
     subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
     addTask(task) { state.tasks.unshift({ ...task, id: crypto.randomUUID(), completedDates: [] }); save(); },

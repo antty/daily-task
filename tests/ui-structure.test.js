@@ -15,6 +15,31 @@ test('the browser page title presents the habit-building product name', () => {
   assert.match(html, /<title>习惯养成<\/title>/);
 });
 
+test('management passwords are private, hashed, and accessed through restricted RPCs', async () => {
+  const migration = await readFile(new URL('../supabase/management-password-migration.sql', import.meta.url), 'utf8');
+  const schema = await readFile(new URL('../supabase/schema.sql', import.meta.url), 'utf8');
+  for (const sql of [migration, schema]) {
+    assert.match(sql, /create schema if not exists private/);
+    assert.match(sql, /create extension if not exists pgcrypto with schema extensions/);
+    assert.match(sql, /private\.household_management_secrets/);
+    assert.match(sql, /extensions\.crypt\('123456',\s*extensions\.gen_salt\('bf'/);
+    assert.doesNotMatch(sql, /public\.(?:crypt|gen_salt)\(/);
+    assert.match(sql, /verify_household_management_password/);
+    assert.match(sql, /change_household_management_password/);
+    assert.match(sql, /security definer set search_path = ''/);
+    assert.match(sql, /revoke execute[^;]+from public, anon/);
+    assert.match(sql, /grant execute[^;]+to authenticated/);
+  }
+});
+
+test('the Supabase store delegates password operations to restricted RPCs', async () => {
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  assert.match(store, /verifyManagementPassword\(password\)/);
+  assert.match(store, /rpc\('verify_household_management_password'/);
+  assert.match(store, /changeManagementPassword\(currentPassword, newPassword\)/);
+  assert.match(store, /rpc\('change_household_management_password'/);
+});
+
 test('family management is only available from the pre-entry dialog behind a password step', () => {
   const home = html.match(/<section id="home-view"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(home, /open-member-dialog/);
@@ -91,7 +116,25 @@ test('ipad usage type management requires the household management password', as
   assert.match(html, /<dialog id="ipad-type-password-dialog"/);
   assert.match(html, /id="ipad-type-password-form"/);
   assert.match(app, /#ipad-type-password-dialog/);
-  assert.match(app, /password !== '123456'/);
+  assert.doesNotMatch(app, /password\s*!==\s*'123456'/);
+  assert.match(app, /await store\.verifyManagementPassword\(password\)/);
+});
+
+test('protected management dialogs verify through the shared store API', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(app, /password\s*!==\s*'123456'/);
+  assert.match(app, /await store\.verifyManagementPassword\(password\)/);
+  assert.match(app, /#family-password-form/);
+  assert.match(app, /#ipad-type-password-form/);
+});
+
+test('family management exposes a validated password-change flow', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(html, /id="open-change-family-password"/);
+  assert.match(html, /id="change-password-dialog"/);
+  assert.match(html, /id="change-password-form"/);
+  assert.match(app, /validatePasswordChange/);
+  assert.match(app, /await store\.changeManagementPassword/);
 });
 
 test('completed ipad records expose duration and an overtime state', async () => {
@@ -181,7 +224,47 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260716-1035"/);
+  assert.match(html, /src="src\/app\.js\?v=20260717-visual-password"/);
+});
+
+test('ipad limit presets include 185 minutes', () => {
+  assert.match(html, /data-ipad-limit="185">185 分钟/);
+});
+
+test('all frontend assets use the same release cache version', () => {
+  const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
+  assert.ok(versions.length >= 7);
+  assert.deepEqual([...new Set(versions)], ['20260717-visual-password']);
+});
+
+test('shared controls expose comfortable visual and touch sizing', async () => {
+  const styles = await Promise.all(['styles.css', 'extras-3.css', 'interaction.css', 'ipad-layout.css'].map((file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8')));
+  const css = styles.join('\n');
+  assert.match(css, /--control-height:\s*44px/);
+  assert.match(css, /\.manager-dialog/);
+  assert.match(css, /\.change-password-dialog/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)/);
+});
+
+test('the ipad summary stays visually hidden before a quota exists', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(css, /#ipad-summary\[hidden\]\s*\{[^}]*display:\s*none\s*!important/);
+});
+
+test('decorative English eyebrow copy is removed from the Chinese interface', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(html, /class="eyebrow"[^>]*>\s*[A-Z][A-Z ]+\s*</);
+  assert.doesNotMatch(html, />\s*(?:WELCOME|SCREEN TIME|USAGE RECORDS|SECURITY|FAMILY|JOIN FAMILY|USAGE FINISHED|USAGE TYPE|AVATAR|NEW TASK|NICE WORK)\s*</);
+  assert.doesNotMatch(app, /'(?:EDIT TASK|NEW TASK|TASK DETAIL|COMPLETED)'/);
+  assert.match(app, /completed \? '已完成' : '任务详情'/);
+});
+
+test('README documents password migration and the 185-minute preset', async () => {
+  const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
+  assert.match(readme, /management-password-migration\.sql/);
+  assert.match(readme, /60、120、180、185 分钟/);
+  assert.match(readme, /先执行.*management-password-migration\.sql.*再发布前端/s);
+  assert.match(readme, /6–12 位数字/);
 });
 
 test('mobile ipad view hides home navigation and centers its own heading', async () => {

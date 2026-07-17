@@ -120,6 +120,27 @@ export function createSupabaseStore() {
     getConnectionError: () => readyError,
     getInviteCode: () => inviteCode,
     hasJoinedHousehold: () => localStorage.getItem(joinedHouseholdKey) === householdId,
+    async verifyManagementPassword(password) {
+      await ready;
+      if (!householdId) return false;
+      const { data, error } = await supabase.rpc('verify_household_management_password', {
+        target_household: householdId,
+        candidate_password: String(password ?? ''),
+      });
+      if (error) throw error;
+      return data === true;
+    },
+    async changeManagementPassword(currentPassword, newPassword) {
+      await ready;
+      if (!householdId) return 'not_authorized';
+      const { data, error } = await supabase.rpc('change_household_management_password', {
+        target_household: householdId,
+        current_password: String(currentPassword ?? ''),
+        new_password: String(newPassword ?? ''),
+      });
+      if (error) throw error;
+      return data;
+    },
     getIpadState: () => structuredClone(ipadState),
     createIpadDailyLimit(memberId, date, limitMinutes) { const limit = { id: crypto.randomUUID(), memberId, date, limitMinutes }; ipadState.limits = [...ipadState.limits.filter((item) => !(item.memberId === memberId && item.date === date)), limit]; local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_daily_limits').upsert({ id: limit.id, household_id: householdId, member_id: memberId, usage_date: date, limit_minutes: limitMinutes }, { onConflict: 'member_id,usage_date' }))); return limit; },
     addIpadUsageEntry(entry) { const created = { ...entry, id: crypto.randomUUID(), title: entry.title || '', note: '', endedAt: null }; ipadState.entries.push(created); local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_usage_entries').insert({ id: created.id, household_id: householdId, member_id: created.memberId, daily_limit_id: created.dailyLimitId, type_id: created.typeId, title: created.title || null, started_at: created.startedAt }))); return created; },
