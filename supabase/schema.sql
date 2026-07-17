@@ -1,7 +1,8 @@
 -- 日常任务系统：在 Supabase SQL Editor 中整段执行。
 -- 适用于全新项目；若当前项目已运行旧版 schema，请先新建项目或手动迁移旧表。
 
-create extension if not exists pgcrypto;
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
 
 create table public.households (
   id uuid primary key default gen_random_uuid(),
@@ -23,7 +24,7 @@ revoke all on schema private from public, anon, authenticated;
 revoke all on table private.household_management_secrets from public, anon, authenticated;
 
 insert into private.household_management_secrets (household_id, password_hash)
-select id, public.crypt('123456', public.gen_salt('bf', 8))
+select id, extensions.crypt('123456', extensions.gen_salt('bf', 8))
 from public.households
 on conflict (household_id) do nothing;
 
@@ -31,7 +32,7 @@ create or replace function private.initialize_household_management_secret()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   insert into private.household_management_secrets (household_id, password_hash)
-  values (new.id, public.crypt('123456', public.gen_salt('bf', 8)))
+  values (new.id, extensions.crypt('123456', extensions.gen_salt('bf', 8)))
   on conflict (household_id) do nothing;
   return new;
 end;
@@ -129,7 +130,7 @@ begin
   where household_id = target_household;
 
   return stored_hash is not null
-    and stored_hash = public.crypt(candidate_password, stored_hash);
+    and stored_hash = extensions.crypt(candidate_password, stored_hash);
 end;
 $$;
 
@@ -155,7 +156,7 @@ begin
   for update;
 
   if stored_hash is null
-     or stored_hash <> public.crypt(coalesce(current_password, ''), stored_hash) then
+     or stored_hash <> extensions.crypt(coalesce(current_password, ''), stored_hash) then
     return 'invalid_current';
   end if;
 
@@ -168,7 +169,7 @@ begin
   end if;
 
   update private.household_management_secrets
-  set password_hash = public.crypt(normalized_password, public.gen_salt('bf', 8)),
+  set password_hash = extensions.crypt(normalized_password, extensions.gen_salt('bf', 8)),
       updated_at = now()
   where household_id = target_household;
 

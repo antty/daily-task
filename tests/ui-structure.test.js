@@ -20,8 +20,10 @@ test('management passwords are private, hashed, and accessed through restricted 
   const schema = await readFile(new URL('../supabase/schema.sql', import.meta.url), 'utf8');
   for (const sql of [migration, schema]) {
     assert.match(sql, /create schema if not exists private/);
+    assert.match(sql, /create extension if not exists pgcrypto with schema extensions/);
     assert.match(sql, /private\.household_management_secrets/);
-    assert.match(sql, /crypt\('123456',\s*(?:public\.)?gen_salt\('bf'/);
+    assert.match(sql, /extensions\.crypt\('123456',\s*extensions\.gen_salt\('bf'/);
+    assert.doesNotMatch(sql, /public\.(?:crypt|gen_salt)\(/);
     assert.match(sql, /verify_household_management_password/);
     assert.match(sql, /change_household_management_password/);
     assert.match(sql, /security definer set search_path = ''/);
