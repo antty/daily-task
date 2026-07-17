@@ -222,7 +222,47 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260716-1035"/);
+  assert.match(html, /src="src\/app\.js\?v=20260717-visual-password"/);
+});
+
+test('ipad limit presets include 185 minutes', () => {
+  assert.match(html, /data-ipad-limit="185">185 分钟/);
+});
+
+test('all frontend assets use the same release cache version', () => {
+  const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
+  assert.ok(versions.length >= 7);
+  assert.deepEqual([...new Set(versions)], ['20260717-visual-password']);
+});
+
+test('shared controls expose comfortable visual and touch sizing', async () => {
+  const styles = await Promise.all(['styles.css', 'extras-3.css', 'interaction.css', 'ipad-layout.css'].map((file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8')));
+  const css = styles.join('\n');
+  assert.match(css, /--control-height:\s*44px/);
+  assert.match(css, /\.manager-dialog/);
+  assert.match(css, /\.change-password-dialog/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)/);
+});
+
+test('the ipad summary stays visually hidden before a quota exists', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(css, /#ipad-summary\[hidden\]\s*\{[^}]*display:\s*none\s*!important/);
+});
+
+test('decorative English eyebrow copy is removed from the Chinese interface', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(html, /class="eyebrow"[^>]*>\s*[A-Z][A-Z ]+\s*</);
+  assert.doesNotMatch(html, />\s*(?:WELCOME|SCREEN TIME|USAGE RECORDS|SECURITY|FAMILY|JOIN FAMILY|USAGE FINISHED|USAGE TYPE|AVATAR|NEW TASK|NICE WORK)\s*</);
+  assert.doesNotMatch(app, /'(?:EDIT TASK|NEW TASK|TASK DETAIL|COMPLETED)'/);
+  assert.match(app, /completed \? '已完成' : '任务详情'/);
+});
+
+test('README documents password migration and the 185-minute preset', async () => {
+  const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
+  assert.match(readme, /management-password-migration\.sql/);
+  assert.match(readme, /60、120、180、185 分钟/);
+  assert.match(readme, /先执行.*management-password-migration\.sql.*再发布前端/s);
+  assert.match(readme, /6–12 位数字/);
 });
 
 test('mobile ipad view hides home navigation and centers its own heading', async () => {
