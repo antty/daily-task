@@ -149,20 +149,88 @@
 }
 
 .ipad-calendar-grid button {
+  position: relative;
   min-width: 0;
-  border: 1px solid transparent;
+  min-height: 60px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-foreground);
   cursor: pointer;
   font: inherit;
+  text-align: center;
 }
 
 .ipad-calendar-grid button.selected {
-  position: relative;
   z-index: 1;
-  border-color: #aa91ce;
-  box-shadow: inset 0 0 0 1px #fff9, 0 4px 10px rgb(82 61 116 / 16%);
-  color: #51377d;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font-weight: inherit;
+  transform: none;
+}
+
+.ipad-calendar-date {
+  display: grid;
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-foreground);
+  font-size: 14px;
   font-weight: 800;
-  transform: translateY(-1px);
+  line-height: 1;
+  transform: translateX(-50%);
+  transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
+}
+
+.ipad-calendar-grid button.selected .ipad-calendar-date {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgb(85 64 143 / 22%);
+}
+
+.ipad-calendar-grid button.today:not(.selected) .ipad-calendar-date {
+  color: var(--color-primary-strong);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+.ipad-calendar-status {
+  display: grid;
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  width: 14px;
+  height: 14px;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  transform: translateX(-50%);
+}
+
+.ipad-calendar-status.within-limit {
+  border: 1px solid #bce3cc;
+  background: #e4f4eb;
+  color: #268254;
+}
+
+.ipad-calendar-status.overtime {
+  border: 1px solid #f1c8d0;
+  background: #fff0f1;
+  color: #c04f64;
+}
+
+.ipad-calendar-grid button.within-limit,
+.ipad-calendar-grid button.overtime {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
 #ipad-summary {
@@ -233,8 +301,9 @@
 }
 
 .ipad-calendar-grid button.overtime {
-  border-color: #efb8c0;
-  box-shadow: inset 0 0 0 1px #ffe1e5, 0 3px 8px #b3263c1a;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
   font-weight: 850;
 }
 
@@ -256,9 +325,16 @@
   .ipad-calendar-grid button,
   .ipad-calendar-grid span {
     min-width: 0;
-    min-height: 38px;
-    padding: 5px 2px;
+    min-height: 60px;
+    padding: 0;
     font-size: 10px;
+  }
+
+  .ipad-calendar-date {
+    top: 4px;
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
   }
 }
 

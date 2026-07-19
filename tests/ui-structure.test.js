@@ -111,6 +111,21 @@ test('ipad calendar dates select the record date shown in the task pane', async 
   assert.match(app, /#ipad-calendar-grid'\)\.addEventListener\('click'/);
 });
 
+test('ipad calendar uses the shared iPhone-style date hierarchy', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(app, /class="ipad-calendar-date"/);
+  assert.match(app, /class="ipad-calendar-status \$\{status\}"/);
+  assert.match(app, /date === today \? 'today' : ''/);
+  assert.match(app, /aria-hidden="true"/);
+  assert.match(css, /\.ipad-calendar-grid button\s*\{[^}]*position:\s*relative[^}]*min-height:\s*60px/);
+  assert.match(css, /\.ipad-calendar-date\s*\{[^}]*left:\s*50%[^}]*width:\s*32px[^}]*height:\s*32px[^}]*border-radius:\s*50%/);
+  assert.match(css, /\.ipad-calendar-grid button\.selected\s*\{[^}]*background:\s*transparent[^}]*box-shadow:\s*none[^}]*transform:\s*none/);
+  assert.match(css, /\.ipad-calendar-grid button\.selected \.ipad-calendar-date\s*\{[^}]*background:\s*var\(--color-primary\)[^}]*color:\s*#fff/);
+  assert.match(css, /\.ipad-calendar-grid button\.today:not\(\.selected\) \.ipad-calendar-date/);
+  assert.match(css, /\.ipad-calendar-status\s*\{[^}]*left:\s*50%[^}]*bottom:\s*4px[^}]*width:\s*14px[^}]*height:\s*14px/);
+});
+
 test('ipad usage type management requires the household management password', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(html, /<dialog id="ipad-type-password-dialog"/);
@@ -224,7 +239,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260719-ios-calendar"/);
+  assert.match(html, /src="src\/app\.js\?v=20260719-ipad-ios-calendar"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -234,7 +249,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260719-ios-calendar']);
+  assert.deepEqual([...new Set(versions)], ['20260719-ipad-ios-calendar']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -420,7 +435,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260719-ios-calendar');
+  assert.equal(versions[0], '20260719-ipad-ios-calendar');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
