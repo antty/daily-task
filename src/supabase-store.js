@@ -100,6 +100,31 @@ export function createSupabaseStore() {
     }
   }
 
+  async function syncLocalMembers() {
+    for (const member of local.getState().members) {
+      await write(supabase.from('household_members').upsert({
+        id: member.id,
+        household_id: householdId,
+        display_name: member.name,
+        color: member.color,
+        avatar_url: await asDataUrlFile(member.avatar, 'avatar', householdId) || null,
+      }));
+    }
+  }
+
+  async function syncFirstFamilySetup() {
+    try {
+      await ensureHousehold();
+      await syncLocalMembers();
+      inviteSyncStatus = 'ready';
+      local.replaceState(local.getState());
+    } catch (error) {
+      inviteSyncStatus = 'failed';
+      local.replaceState(local.getState());
+      throw error;
+    }
+  }
+
   async function loadRemote() {
     const [{ data: members, error: memberError }, { data: types, error: typeError }, { data: tasks, error: taskError }, { data: completions, error: completionError }] = await Promise.all([
       supabase.from('household_members').select('*').eq('household_id', householdId),
@@ -153,6 +178,13 @@ export function createSupabaseStore() {
     getInviteSyncStatus: () => inviteSyncStatus,
     hasHousehold: () => Boolean(householdId),
     hasJoinedHousehold: () => localStorage.getItem(joinedHouseholdKey) === householdId,
+    async retryHouseholdSync() {
+      await ready;
+      inviteSyncStatus = 'syncing';
+      local.replaceState(local.getState());
+      await syncFirstFamilySetup();
+      return inviteCode;
+    },
     async leaveHousehold() {
       await ready;
       if (localStorage.getItem(joinedHouseholdKey) !== householdId || !householdId) return false;
@@ -203,10 +235,8 @@ export function createSupabaseStore() {
     toggleCompletion(id, date) { local.toggleCompletion(id, date); sync(() => write(supabase.from('task_completions').delete().eq('task_id', id).eq('occurrence_date', date))); },
     addMember(name, avatar) {
       local.addMember(name, avatar);
-      const member = local.getState().members.at(-1);
       sync(async () => {
-        await ensureHousehold();
-        await write(supabase.from('household_members').insert({ id: member.id, household_id: householdId, display_name: name, color: member.color, avatar_url: await asDataUrlFile(avatar, 'avatar', householdId) || null }));
+        await syncFirstFamilySetup();
       });
     },
     renameMember(id, name) { local.renameMember(id, name); sync(() => write(supabase.from('household_members').update({ display_name: name }).eq('id', id))); },

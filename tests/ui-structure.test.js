@@ -45,7 +45,7 @@ test('first-time family setup creates a household before syncing the first membe
   assert.match(store, /async function ensureHousehold\(\)/);
   assert.match(store, /from\('households'\)\.insert\(/);
   assert.match(store, /verifyManagementPassword\(password\)[\s\S]*if \(!householdId\) return canUseInitialFamilyPassword/);
-  assert.match(store, /addMember\(name, avatar\)[\s\S]*await ensureHousehold\(\)[\s\S]*from\('household_members'\)\.insert/);
+  assert.match(store, /addMember\(name, avatar\)[\s\S]*await syncFirstFamilySetup\(\)/);
 });
 
 test('first-time family setup explains the initial password and keeps invite status current', async () => {
@@ -60,6 +60,17 @@ test('first-time family setup explains the initial password and keeps invite sta
   assert.match(store, /let inviteSyncStatus = 'idle'/);
   assert.match(store, /inviteSyncStatus = 'syncing'/);
   assert.match(store, /getInviteSyncStatus: \(\) => inviteSyncStatus/);
+});
+
+test('failed first-family sync preserves local members and exposes a retry action', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  assert.match(html, /id="retry-family-sync"[^>]*hidden/);
+  assert.match(app, /已添加的成员会被保留/);
+  assert.match(app, /await store\.retryHouseholdSync\(\)/);
+  assert.match(store, /async retryHouseholdSync\(\)/);
+  assert.match(store, /async function syncLocalMembers\(\)/);
+  assert.match(store, /from\('household_members'\)\.upsert/);
 });
 
 test('entry actions distinguish creating, joining, and leaving a household safely', async () => {
@@ -286,7 +297,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260719-family-exit"/);
+  assert.match(html, /src="src\/app\.js\?v=20260719-family-retry"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -296,7 +307,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260719-family-exit']);
+  assert.deepEqual([...new Set(versions)], ['20260719-family-retry']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -482,7 +493,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260719-family-exit');
+  assert.equal(versions[0], '20260719-family-retry');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
