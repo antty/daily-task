@@ -40,6 +40,14 @@ test('the Supabase store delegates password operations to restricted RPCs', asyn
   assert.match(store, /rpc\('change_household_management_password'/);
 });
 
+test('first-time family setup creates a household before syncing the first member', async () => {
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  assert.match(store, /async function ensureHousehold\(\)/);
+  assert.match(store, /from\('households'\)\.insert\(/);
+  assert.match(store, /verifyManagementPassword\(password\)[\s\S]*if \(!householdId\) return canUseInitialFamilyPassword/);
+  assert.match(store, /addMember\(name, avatar\)[\s\S]*await ensureHousehold\(\)[\s\S]*from\('household_members'\)\.insert/);
+});
+
 test('family management is only available from the pre-entry dialog behind a password step', () => {
   const home = html.match(/<section id="home-view"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(home, /open-member-dialog/);
@@ -239,7 +247,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260719-ipad-ios-calendar"/);
+  assert.match(html, /src="src\/app\.js\?v=20260719-family-init"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -249,7 +257,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260719-ipad-ios-calendar']);
+  assert.deepEqual([...new Set(versions)], ['20260719-family-init']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -435,7 +443,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260719-ipad-ios-calendar');
+  assert.equal(versions[0], '20260719-family-init');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {

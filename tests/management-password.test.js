@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getManagementPasswordError, validatePasswordChange } from '../src/management-password.js';
+import { canUseInitialFamilyPassword, getManagementPasswordError, validatePasswordChange } from '../src/management-password.js';
 import { createStore } from '../src/task-store.js';
 
 Object.defineProperty(globalThis, 'localStorage', {
@@ -34,4 +34,10 @@ test('local fallback changes the in-memory management password', async () => {
   assert.equal(await store.changeManagementPassword('123456', '407285'), 'ok');
   assert.equal(await store.verifyManagementPassword('123456'), false);
   assert.equal(await store.verifyManagementPassword('407285'), true);
+});
+
+test('only a user without a household can enter family setup with the initial password', () => {
+  assert.equal(canUseInitialFamilyPassword({ hasHousehold: false, password: '123456' }), true);
+  assert.equal(canUseInitialFamilyPassword({ hasHousehold: false, password: '407285' }), false);
+  assert.equal(canUseInitialFamilyPassword({ hasHousehold: true, password: '123456' }), false);
 });

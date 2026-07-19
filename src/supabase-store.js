@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { createStore } from './task-store.js';
 import { supabaseConfig } from './supabase-config.js';
+import { canUseInitialFamilyPassword } from './management-password.js';
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.publishableKey);
 const colors = ['#6750a4', '#ec6d8c', '#377d70', '#c2733c', '#3f7cac', '#2e8b72'];
@@ -24,6 +25,7 @@ export function createSupabaseStore() {
   let inviteCode = '';
   let userId;
   let readyError;
+  let householdCreation;
   let ipadState = { types: [], limits: [], entries: [] };
   const ready = connect();
   const sync = (work) => ready.then(work).catch((error) => { readyError = error; console.error('Supabase sync failed', error); });
@@ -67,6 +69,26 @@ export function createSupabaseStore() {
     if (remote.members.length || remote.tasks.length || remote.types.length) local.replaceState(remote);
     else await seedRemote(local.getState());
     await refreshIpadState();
+  }
+
+  async function ensureHousehold() {
+    if (householdId) return householdId;
+    if (householdCreation) return householdCreation;
+    householdCreation = (async () => {
+      const id = crypto.randomUUID();
+      const code = createInviteCode();
+      const { data, error } = await supabase.from('households').insert({ id, owner_id: userId, invite_code: code }).select('id, invite_code').single();
+      if (error) throw error;
+      householdId = data.id;
+      inviteCode = data.invite_code;
+      localStorage.setItem(householdKey, householdId);
+      return householdId;
+    })();
+    try {
+      return await householdCreation;
+    } finally {
+      householdCreation = undefined;
+    }
   }
 
   async function loadRemote() {
@@ -122,7 +144,7 @@ export function createSupabaseStore() {
     hasJoinedHousehold: () => localStorage.getItem(joinedHouseholdKey) === householdId,
     async verifyManagementPassword(password) {
       await ready;
-      if (!householdId) return false;
+      if (!householdId) return canUseInitialFamilyPassword({ hasHousehold: false, password });
       const { data, error } = await supabase.rpc('verify_household_management_password', {
         target_household: householdId,
         candidate_password: String(password ?? ''),
@@ -154,7 +176,14 @@ export function createSupabaseStore() {
     deleteTask(id, scope, fromDate) { local.deleteTask(id, scope, fromDate); sync(async () => { if (scope === 'future') { const end = new Date(`${fromDate}T00:00:00`); end.setDate(end.getDate() - 1); await write(supabase.from('tasks').update({ end_date: end.toISOString().slice(0, 10) }).eq('id', id)); await write(supabase.from('task_completions').delete().eq('task_id', id).gte('occurrence_date', fromDate)); } else await write(supabase.from('tasks').delete().eq('id', id)); }); },
     completeTask(id, date, detail = {}) { local.completeTask(id, date, detail); sync(async () => { const imageUrl = await asDataUrlFile(detail.image, `completion-${date}`, householdId); await write(supabase.from('task_completions').upsert({ household_id: householdId, task_id: id, occurrence_date: date, note: detail.note || '', image_url: imageUrl || null })); }); },
     toggleCompletion(id, date) { local.toggleCompletion(id, date); sync(() => write(supabase.from('task_completions').delete().eq('task_id', id).eq('occurrence_date', date))); },
-    addMember(name, avatar) { local.addMember(name, avatar); const member = local.getState().members.at(-1); sync(async () => write(supabase.from('household_members').insert({ id: member.id, household_id: householdId, display_name: name, color: member.color, avatar_url: await asDataUrlFile(avatar, 'avatar', householdId) || null }))); },
+    addMember(name, avatar) {
+      local.addMember(name, avatar);
+      const member = local.getState().members.at(-1);
+      sync(async () => {
+        await ensureHousehold();
+        await write(supabase.from('household_members').insert({ id: member.id, household_id: householdId, display_name: name, color: member.color, avatar_url: await asDataUrlFile(avatar, 'avatar', householdId) || null }));
+      });
+    },
     renameMember(id, name) { local.renameMember(id, name); sync(() => write(supabase.from('household_members').update({ display_name: name }).eq('id', id))); },
     updateMemberAvatar(id, avatar) { local.updateMemberAvatar(id, avatar); sync(async () => write(supabase.from('household_members').update({ avatar_url: await asDataUrlFile(avatar, 'avatar', householdId) || null }).eq('id', id))); },
     deleteMember(id) { local.deleteMember(id); sync(() => write(supabase.from('household_members').delete().eq('id', id))); },

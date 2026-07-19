@@ -1,6 +1,10 @@
 const ascending = '012345678901234567890';
 const descending = '987654321098765432109';
 
+export function canUseInitialFamilyPassword({ hasHousehold, password }) {
+  return !hasHousehold && String(password ?? '') === '123456';
+}
+
 export function getManagementPasswordError(password) {
   const value = String(password ?? '').trim();
   if (!/^\d{6,12}$/.test(value)) return '管理密码必须是 6–12 位数字。';
