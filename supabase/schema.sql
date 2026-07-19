@@ -4,6 +4,20 @@
 create schema if not exists extensions;
 create extension if not exists pgcrypto with schema extensions;
 
+do $$
+declare pgcrypto_schema text;
+begin
+  select n.nspname into pgcrypto_schema
+  from pg_extension e
+  join pg_namespace n on n.oid = e.extnamespace
+  where e.extname = 'pgcrypto';
+
+  if pgcrypto_schema is distinct from 'extensions' then
+    execute 'alter extension pgcrypto set schema extensions';
+  end if;
+end;
+$$;
+
 create table public.households (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references auth.users(id) on delete cascade,
@@ -24,7 +38,7 @@ revoke all on schema private from public, anon, authenticated;
 revoke all on table private.household_management_secrets from public, anon, authenticated;
 
 insert into private.household_management_secrets (household_id, password_hash)
-select id, extensions.crypt('123456', extensions.gen_salt('bf', 8))
+select id, extensions.crypt('123456', extensions.gen_salt('bf'))
 from public.households
 on conflict (household_id) do nothing;
 
@@ -32,7 +46,7 @@ create or replace function private.initialize_household_management_secret()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   insert into private.household_management_secrets (household_id, password_hash)
-  values (new.id, extensions.crypt('123456', extensions.gen_salt('bf', 8)))
+  values (new.id, extensions.crypt('123456', extensions.gen_salt('bf')))
   on conflict (household_id) do nothing;
   return new;
 end;
@@ -169,7 +183,7 @@ begin
   end if;
 
   update private.household_management_secrets
-  set password_hash = extensions.crypt(normalized_password, extensions.gen_salt('bf', 8)),
+  set password_hash = extensions.crypt(normalized_password, extensions.gen_salt('bf')),
       updated_at = now()
   where household_id = target_household;
 

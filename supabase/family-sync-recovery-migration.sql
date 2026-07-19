@@ -1,5 +1,5 @@
--- 家庭管理密码迁移：在发布依赖新密码 RPC 的前端前执行。
--- 可重复执行；已有家庭会获得初始密码 123456 的独立带盐哈希。
+-- 修复新家庭邀请码同步和退出家庭依赖。
+-- 可在 Supabase SQL Editor 中整段重复执行，不会删除家庭、成员或任务数据。
 
 create schema if not exists extensions;
 create extension if not exists pgcrypto with schema extensions;
@@ -17,6 +17,7 @@ begin
   end if;
 end;
 $$;
+
 create schema if not exists private;
 
 create table if not exists private.household_management_secrets (
@@ -120,3 +121,39 @@ revoke execute on function public.verify_household_management_password(uuid, tex
 revoke execute on function public.change_household_management_password(uuid, text, text) from public, anon;
 grant execute on function public.verify_household_management_password(uuid, text) to authenticated;
 grant execute on function public.change_household_management_password(uuid, text, text) to authenticated;
+
+alter table public.households enable row level security;
+alter table public.household_members enable row level security;
+
+drop policy if exists "owners create households" on public.households;
+create policy "owners create households" on public.households
+for insert with check (owner_id = auth.uid());
+
+drop policy if exists "owners manage members" on public.household_members;
+create policy "owners manage members" on public.household_members
+for all using (public.can_access_household(household_id))
+with check (public.can_access_household(household_id));
+
+create or replace function public.leave_household(target_household uuid)
+returns boolean language plpgsql security definer set search_path = '' as $$
+begin
+  if auth.uid() is null or target_household is null then
+    return false;
+  end if;
+
+  if exists (
+    select 1 from public.households
+    where id = target_household and owner_id = auth.uid()
+  ) then
+    raise exception '家庭创建者不能撤销自己的云端所有权';
+  end if;
+
+  delete from public.household_access
+  where household_id = target_household and user_id = auth.uid();
+
+  return found;
+end;
+$$;
+
+revoke execute on function public.leave_household(uuid) from public, anon;
+grant execute on function public.leave_household(uuid) to authenticated;

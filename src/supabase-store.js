@@ -8,7 +8,25 @@ const colors = ['#6750a4', '#ec6d8c', '#377d70', '#c2733c', '#3f7cac', '#2e8b72'
 const write = async (request) => { const { error } = await request; if (error) throw error; };
 const householdKey = 'daily-task-active-household';
 const joinedHouseholdKey = 'daily-task-joined-household';
+const ignoredHouseholdsKey = 'daily-task-ignored-households';
 const createInviteCode = () => Array.from(crypto.getRandomValues(new Uint32Array(8)), (value) => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[value % 32]).join('');
+
+const getIgnoredHouseholds = () => {
+  try { return new Set(JSON.parse(localStorage.getItem(ignoredHouseholdsKey) || '[]')); }
+  catch { return new Set(); }
+};
+
+function ignoreHousehold(id) {
+  const ignored = getIgnoredHouseholds();
+  ignored.add(id);
+  localStorage.setItem(ignoredHouseholdsKey, JSON.stringify([...ignored]));
+}
+
+function restoreHousehold(id) {
+  const ignored = getIgnoredHouseholds();
+  if (!ignored.delete(id)) return;
+  localStorage.setItem(ignoredHouseholdsKey, JSON.stringify([...ignored]));
+}
 
 const asDataUrlFile = async (value, name, householdId) => {
   if (!value?.startsWith?.('data:')) return value || '';
@@ -24,6 +42,7 @@ export function createSupabaseStore() {
   let householdId;
   let inviteCode = '';
   let inviteSyncStatus = 'idle';
+  let inviteSyncError = '';
   let userId;
   let readyError;
   let householdCreation;
@@ -56,13 +75,15 @@ export function createSupabaseStore() {
     }
     if (!session) throw new Error('无法建立 Supabase 匿名会话。请在 Authentication 中启用 Anonymous Sign-Ins。');
     userId = session.user.id;
+    const ignoredHouseholds = getIgnoredHouseholds();
     const preferredId = localStorage.getItem(householdKey);
-    const { data: preferred } = preferredId ? await supabase.from('households').select('id, invite_code').eq('id', preferredId).maybeSingle() : { data: null };
-    const { data: households, error: householdError } = await supabase.from('households').select('id, invite_code').eq('owner_id', userId).limit(1);
+    const { data: preferred } = preferredId && !ignoredHouseholds.has(preferredId) ? await supabase.from('households').select('id, invite_code').eq('id', preferredId).maybeSingle() : { data: null };
+    const { data: households, error: householdError } = await supabase.from('households').select('id, invite_code').eq('owner_id', userId);
     if (householdError) throw householdError;
-    if (preferred && !households.some((household) => household.id === preferred.id)) localStorage.setItem(joinedHouseholdKey, preferred.id);
+    const availableHouseholds = households.filter((household) => !ignoredHouseholds.has(household.id));
+    if (preferred && !availableHouseholds.some((household) => household.id === preferred.id)) localStorage.setItem(joinedHouseholdKey, preferred.id);
     if (preferred) { householdId = preferred.id; inviteCode = preferred.invite_code; inviteSyncStatus = 'ready'; }
-    else if (households.length) { householdId = households[0].id; inviteCode = households[0].invite_code; inviteSyncStatus = 'ready'; }
+    else if (availableHouseholds.length) { householdId = availableHouseholds[0].id; inviteCode = availableHouseholds[0].invite_code; inviteSyncStatus = 'ready'; }
     else { householdId = ''; inviteCode = ''; inviteSyncStatus = 'idle'; }
     if (!householdId) return;
     localStorage.setItem(householdKey, householdId);
@@ -85,6 +106,8 @@ export function createSupabaseStore() {
       householdId = data.id;
       inviteCode = data.invite_code;
       inviteSyncStatus = 'ready';
+      inviteSyncError = '';
+      restoreHousehold(householdId);
       localStorage.setItem(householdKey, householdId);
       local.replaceState(local.getState());
       return householdId;
@@ -93,6 +116,7 @@ export function createSupabaseStore() {
       return await householdCreation;
     } catch (error) {
       inviteSyncStatus = 'failed';
+      inviteSyncError = error?.message || '未知同步错误';
       local.replaceState(local.getState());
       throw error;
     } finally {
@@ -117,9 +141,11 @@ export function createSupabaseStore() {
       await ensureHousehold();
       await syncLocalMembers();
       inviteSyncStatus = 'ready';
+      inviteSyncError = '';
       local.replaceState(local.getState());
     } catch (error) {
       inviteSyncStatus = 'failed';
+      inviteSyncError = error?.message || '未知同步错误';
       local.replaceState(local.getState());
       throw error;
     }
@@ -186,29 +212,35 @@ export function createSupabaseStore() {
     getConnectionError: () => readyError,
     getInviteCode: () => inviteCode,
     getInviteSyncStatus: () => inviteSyncStatus,
+    getInviteSyncError: () => inviteSyncError,
     hasHousehold: () => Boolean(householdId),
     hasJoinedHousehold: () => localStorage.getItem(joinedHouseholdKey) === householdId,
     async retryHouseholdSync() {
       await ready;
       inviteSyncStatus = 'syncing';
+      inviteSyncError = '';
       local.replaceState(local.getState());
       await syncFirstFamilySetup();
       return inviteCode;
     },
     async leaveHousehold() {
       const targetHousehold = householdId || localStorage.getItem(householdKey);
-      if (localStorage.getItem(joinedHouseholdKey) !== targetHousehold || !targetHousehold) return { left: false, remoteSynced: false };
-      let remoteSynced = false;
-      try {
-        await ready;
-        const { error } = await supabase.rpc('leave_household', { target_household: targetHousehold });
-        if (error) throw error;
-        remoteSynced = true;
-      } catch (error) {
-        console.warn('Supabase household access revocation failed', error);
+      if (!targetHousehold) return { left: false, remoteSynced: false, localOnly: false };
+      const isJoinedHousehold = localStorage.getItem(joinedHouseholdKey) === targetHousehold;
+      let remoteSynced = !isJoinedHousehold;
+      if (isJoinedHousehold) {
+        try {
+          await ready;
+          const { error } = await supabase.rpc('leave_household', { target_household: targetHousehold });
+          if (error) throw error;
+          remoteSynced = true;
+        } catch (error) {
+          console.warn('Supabase household access revocation failed', error);
+        }
       }
+      ignoreHousehold(targetHousehold);
       clearLocalHousehold();
-      return { left: true, remoteSynced };
+      return { left: true, remoteSynced, localOnly: !isJoinedHousehold };
     },
     async verifyManagementPassword(password) {
       await ready;
@@ -238,7 +270,7 @@ export function createSupabaseStore() {
     addIpadUsageType(memberId, name, countsTowardLimit = true) { const type = { id: crypto.randomUUID(), memberId, name, countsTowardLimit, color: colors[ipadState.types.length % colors.length] }; ipadState.types.push(type); local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_usage_types').insert({ id: type.id, household_id: householdId, member_id: memberId, name, counts_toward_limit: countsTowardLimit, color: type.color }))); return type; },
     updateIpadUsageType(id, patch) { ipadState.types = ipadState.types.map((type) => type.id === id ? { ...type, ...patch } : type); local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_usage_types').update({ name: patch.name, counts_toward_limit: patch.countsTowardLimit }).eq('id', id))); },
     deleteIpadUsageType(id) { ipadState.types = ipadState.types.filter((type) => type.id !== id); local.replaceState(local.getState()); sync(() => write(supabase.from('ipad_usage_types').delete().eq('id', id))); },
-    joinHousehold(invite) { return ready.then(async () => { const normalizedInvite = String(invite).trim().toUpperCase(); const { data, error } = await supabase.rpc('join_household_by_invite', { invite_code: normalizedInvite }); if (error) throw error; householdId = data; localStorage.setItem(householdKey, householdId); localStorage.setItem(joinedHouseholdKey, householdId); inviteCode = normalizedInvite; local.replaceState(await loadRemote()); }); },
+    joinHousehold(invite) { return ready.then(async () => { const normalizedInvite = String(invite).trim().toUpperCase(); const { data, error } = await supabase.rpc('join_household_by_invite', { invite_code: normalizedInvite }); if (error) throw error; householdId = data; restoreHousehold(householdId); localStorage.setItem(householdKey, householdId); localStorage.setItem(joinedHouseholdKey, householdId); inviteCode = normalizedInvite; local.replaceState(await loadRemote()); }); },
     addTaskForMember(task, memberId) { local.addTaskForMember(task, memberId); const created = local.getState().tasks[0]; sync(() => write(supabase.from('tasks').insert({ id: created.id, household_id: householdId, title: created.title, description: created.description, type_id: created.typeId || null, member_id: memberId, start_date: created.startDate, recurrence: created.recurrence, weekdays: created.weekdays || [] }))); },
     updateTask(id, patch) { local.updateTask(id, patch); sync(() => write(supabase.from('tasks').update({ title: patch.title, description: patch.description, type_id: patch.typeId || null, start_date: patch.startDate, recurrence: patch.recurrence, weekdays: patch.weekdays || [] }).eq('id', id))); },
     deleteTask(id, scope, fromDate) { local.deleteTask(id, scope, fromDate); sync(async () => { if (scope === 'future') { const end = new Date(`${fromDate}T00:00:00`); end.setDate(end.getDate() - 1); await write(supabase.from('tasks').update({ end_date: end.toISOString().slice(0, 10) }).eq('id', id)); await write(supabase.from('task_completions').delete().eq('task_id', id).gte('occurrence_date', fromDate)); } else await write(supabase.from('tasks').delete().eq('id', id)); }); },

@@ -97,9 +97,33 @@ test('leaving a family clears this device even when cloud access revocation fail
   const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
   assert.match(store, /function clearLocalHousehold\(\)/);
   assert.match(store, /async leaveHousehold\(\)[\s\S]*catch \(error\)[\s\S]*clearLocalHousehold\(\)/);
-  assert.match(store, /return \{ left: true, remoteSynced \}/);
+  assert.match(store, /return \{ left: true, remoteSynced, localOnly:/);
   assert.match(app, /const result = await store\.leaveHousehold\(\)/);
   assert.match(app, /result\.remoteSynced/);
+});
+
+test('an exited owner household stays dismissed on this device after refresh', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  assert.match(store, /const ignoredHouseholdsKey = 'daily-task-ignored-households'/);
+  assert.match(store, /function ignoreHousehold\(id\)/);
+  assert.match(store, /households\.filter\(\(household\) => !ignoredHouseholds\.has\(household\.id\)\)/);
+  assert.match(store, /ignoreHousehold\(targetHousehold\)[\s\S]*clearLocalHousehold\(\)/);
+  assert.match(app, /\$\('#leave-family-zone'\)\.hidden = !store\.hasHousehold\?\.\(\)/);
+});
+
+test('family sync failures explain the required recovery migration', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  const schema = await readFile(new URL('../supabase/schema.sql', import.meta.url), 'utf8');
+  const recovery = await readFile(new URL('../supabase/family-sync-recovery-migration.sql', import.meta.url), 'utf8');
+  assert.match(store, /getInviteSyncError: \(\) => inviteSyncError/);
+  assert.match(app, /family-sync-recovery-migration\.sql/);
+  assert.match(schema, /alter extension pgcrypto set schema extensions/);
+  assert.match(schema, /extensions\.gen_salt\('bf'\)/);
+  assert.match(recovery, /drop trigger if exists initialize_household_management_secret/);
+  assert.match(recovery, /create policy "owners create households"/);
+  assert.match(recovery, /create or replace function public\.leave_household/);
 });
 
 test('family entry waits for household hydration before choosing create or manage', async () => {
@@ -307,7 +331,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260719-family-exit-fallback"/);
+  assert.match(html, /src="src\/app\.js\?v=20260719-family-recovery"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -317,7 +341,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260719-family-exit-fallback']);
+  assert.deepEqual([...new Set(versions)], ['20260719-family-recovery']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -503,7 +527,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260719-family-exit-fallback');
+  assert.equal(versions[0], '20260719-family-recovery');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
