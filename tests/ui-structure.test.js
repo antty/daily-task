@@ -224,7 +224,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260718-calendar-status-gap"/);
+  assert.match(html, /src="src\/app\.js\?v=20260719-ios-calendar"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -234,7 +234,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260718-calendar-status-gap']);
+  assert.deepEqual([...new Set(versions)], ['20260719-ios-calendar']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -420,7 +420,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260718-calendar-status-gap');
+  assert.equal(versions[0], '20260719-ios-calendar');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
@@ -449,12 +449,13 @@ test('every dialog variant keeps an intentional width and content rhythm', async
 
 test('selected task calendar date stays visible over completion state backgrounds', async () => {
   const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
-  assert.match(css, /\.compact-home \.day\.selected\s*\{[^}]*background:\s*linear-gradient\([^}]*box-shadow:\s*inset 0 0 0 1px/);
-  assert.match(css, /\.compact-home \.day\.selected b\s*\{[^}]*display:\s*inline-grid[^}]*position:\s*absolute[^}]*top:\s*6px[^}]*left:\s*6px[^}]*background:\s*var\(--color-primary\)[^}]*color:\s*#fff/);
-  assert.doesNotMatch(css, /\.compact-home \.day\.selected\s*\{[^}]*inset 0 0 0 2px/);
-  assert.match(css, /\.compact-home \.day \.calendar-status\s*\{[^}]*position:\s*absolute[^}]*right:\s*7px[^}]*bottom:\s*7px[^}]*margin:\s*0/);
-  assert.match(css, /@media \(max-width: 600px\)[\s\S]*\.compact-home \.day\.selected b\s*\{[^}]*min-width:\s*20px[^}]*height:\s*20px[^}]*top:\s*5px[^}]*left:\s*5px/);
-  assert.match(css, /@media \(max-width: 600px\)[\s\S]*\.compact-home \.day \.calendar-status\s*\{[^}]*width:\s*15px[^}]*height:\s*15px[^}]*right:\s*4px[^}]*bottom:\s*4px/);
+  assert.match(css, /\.compact-home \.day\s*\{[^}]*height:\s*60px/);
+  assert.match(css, /\.compact-home \.day b\s*\{[^}]*position:\s*absolute[^}]*left:\s*50%[^}]*width:\s*32px[^}]*height:\s*32px[^}]*border-radius:\s*50%[^}]*transform:\s*translateX\(-50%\)/);
+  assert.match(css, /\.compact-home \.day\.selected\s*\{[^}]*background:\s*transparent[^}]*box-shadow:\s*none/);
+  assert.match(css, /\.compact-home \.day\.selected b\s*\{[^}]*background:\s*var\(--color-primary\)[^}]*color:\s*#fff/);
+  assert.match(css, /\.compact-home \.day\.today:not\(\.selected\) b\s*\{[^}]*box-shadow:\s*inset 0 0 0 1px var\(--color-primary\)/);
+  assert.match(css, /\.compact-home \.day \.calendar-status\s*\{[^}]*left:\s*50%[^}]*bottom:\s*4px[^}]*width:\s*14px[^}]*height:\s*14px[^}]*transform:\s*translateX\(-50%\)/);
+  assert.match(css, /@media \(max-width: 600px\)[\s\S]*\.compact-home \.day b\s*\{[^}]*width:\s*30px[^}]*height:\s*30px/);
 });
 
 test('ipad overtime metric keeps the same card geometry as sibling metrics', async () => {

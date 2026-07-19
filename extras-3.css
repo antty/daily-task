@@ -392,65 +392,85 @@ body{background:url('assets/motivation-background.png') center top / cover fixed
   }
 }
 
-/* Selection remains visible regardless of the day's task status. */
+/* iPhone 风格日历层级：日期焦点在上，任务状态在下。 */
+.compact-home .day {
+  height: 60px;
+  padding: 0;
+  text-align: center;
+}
+
+.compact-home .day b {
+  display: grid;
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-foreground);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  transform: translateX(-50%);
+  transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
+}
+
 .compact-home .day.selected {
-  background: linear-gradient(145deg, #f7f3fc, #fff);
-  box-shadow: inset 0 0 0 1px #cbbbe1, 0 4px 12px rgb(83 60 117 / 10%);
+  background: transparent;
+  box-shadow: none;
 }
 
 .compact-home .day.selected b {
-  display: inline-grid;
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  min-width: 24px;
-  height: 24px;
-  margin: 0;
-  padding: 0 6px;
-  place-items: center;
-  border-radius: 8px;
   background: var(--color-primary);
   color: #fff;
-  box-shadow: 0 3px 8px rgb(85 64 143 / 22%);
+  box-shadow: 0 4px 10px rgb(85 64 143 / 22%);
 }
 
-/* Keep task state independent from the selected date badge. */
+.compact-home .day.today:not(.selected) b {
+  color: var(--color-primary-strong);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
 .compact-home .day .calendar-status {
+  display: grid;
   position: absolute;
-  right: 7px;
-  bottom: 7px;
+  left: 50%;
+  right: auto;
+  bottom: 4px;
+  width: 14px;
+  height: 14px;
   margin: 0;
+  place-items: center;
+  font-size: 9px;
+  transform: translateX(-50%);
 }
 
 .compact-home .day .calendar-status.has-task,
 .compact-home .day .calendar-status.idle {
-  right: 8px;
+  left: 50%;
+  right: auto;
   bottom: 8px;
+  width: 14px;
+  height: 3px;
   margin: 0;
+  border-radius: 999px;
+  background: #83b697;
+  color: transparent;
+  font-size: 0;
+  transform: translateX(-50%);
+}
+
+.compact-home .day .calendar-status.idle {
+  background: #d7d1dc;
+  opacity: .7;
 }
 
 @media (max-width: 600px) {
-  .compact-home .day.selected b {
-    min-width: 20px;
-    height: 20px;
-    top: 5px;
-    left: 5px;
-    padding: 0 4px;
-    border-radius: 6px;
-    font-size: 11px;
-  }
-
-  .compact-home .day .calendar-status {
-    width: 15px;
-    height: 15px;
-    right: 4px;
-    bottom: 4px;
-    font-size: 9px;
-  }
-
-  .compact-home .day .calendar-status.has-task,
-  .compact-home .day .calendar-status.idle {
-    right: 4px;
-    bottom: 4px;
+  .compact-home .day b {
+    top: 4px;
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
   }
 }
