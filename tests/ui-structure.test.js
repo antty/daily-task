@@ -478,3 +478,30 @@ test('ipad overtime metric keeps the same card geometry as sibling metrics', asy
   assert.match(css, /\.ipad-metric\.ipad-summary-overtime\s*\{[^}]*margin-left:\s*0[^}]*border-radius:\s*15px/);
   assert.doesNotMatch(css, /\.ipad-metric\.ipad-summary-overtime\s*\{[^}]*border-radius:\s*999px/);
 });
+
+test('product introduction page exposes the public landing structure', async () => {
+  const intro = await readFile(new URL('../intro.html', import.meta.url), 'utf8');
+  assert.match(intro, /<title>习惯养成 · 家庭任务与 iPad 使用管理<\/title>/);
+  assert.match(intro, /id="intro-hero"/);
+  assert.match(intro, /id="features"/);
+  assert.match(intro, /id="screenshots"/);
+  assert.match(intro, /id="workflow"/);
+  assert.match(intro, /href="index\.html"[^>]*>\s*立即开始/);
+});
+
+test('product introduction page uses local accessible screenshots', async () => {
+  const intro = await readFile(new URL('../intro.html', import.meta.url), 'utf8');
+  assert.match(intro, /href="intro\.css\?v=20260719-intro"/);
+  for (const name of ['daily-calendar', 'task-completion', 'ipad-usage']) {
+    assert.match(intro, new RegExp(`src="assets/intro/${name}\\.webp"[^>]+alt="[^"]+"[^>]+width="\\d+"[^>]+height="\\d+"`));
+  }
+});
+
+test('product introduction hero keeps its headline and screenshot inside the layout', async () => {
+  const intro = await readFile(new URL('../intro.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../intro.css', import.meta.url), 'utf8');
+  assert.match(intro, /<span class="intro-title-line">在家里自然发生<\/span>/);
+  assert.match(css, /\.intro-title-line\s*\{[^}]*white-space:\s*nowrap/);
+  assert.match(css, /\.intro-hero-visual\s*\{[^}]*width:\s*100%[^}]*max-width:\s*720px/);
+  assert.match(css, /@media\s*\(max-width:\s*900px\)[\s\S]*\.intro-hero-grid,[\s\S]*\.intro-workflow-layout\s*\{[^}]*grid-template-columns:\s*1fr/);
+});
