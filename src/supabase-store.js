@@ -23,6 +23,7 @@ export function createSupabaseStore() {
   const local = createStore();
   let householdId;
   let inviteCode = '';
+  let inviteSyncStatus = 'idle';
   let userId;
   let readyError;
   let householdCreation;
@@ -60,9 +61,9 @@ export function createSupabaseStore() {
     const { data: households, error: householdError } = await supabase.from('households').select('id, invite_code').eq('owner_id', userId).limit(1);
     if (householdError) throw householdError;
     if (preferred && !households.some((household) => household.id === preferred.id)) localStorage.setItem(joinedHouseholdKey, preferred.id);
-    if (preferred) { householdId = preferred.id; inviteCode = preferred.invite_code; }
-    else if (households.length) { householdId = households[0].id; inviteCode = households[0].invite_code; }
-    else { householdId = ''; inviteCode = ''; }
+    if (preferred) { householdId = preferred.id; inviteCode = preferred.invite_code; inviteSyncStatus = 'ready'; }
+    else if (households.length) { householdId = households[0].id; inviteCode = households[0].invite_code; inviteSyncStatus = 'ready'; }
+    else { householdId = ''; inviteCode = ''; inviteSyncStatus = 'idle'; }
     if (!householdId) return;
     localStorage.setItem(householdKey, householdId);
     const remote = await loadRemote();
@@ -74,6 +75,8 @@ export function createSupabaseStore() {
   async function ensureHousehold() {
     if (householdId) return householdId;
     if (householdCreation) return householdCreation;
+    inviteSyncStatus = 'syncing';
+    local.replaceState(local.getState());
     householdCreation = (async () => {
       const id = crypto.randomUUID();
       const code = createInviteCode();
@@ -81,11 +84,17 @@ export function createSupabaseStore() {
       if (error) throw error;
       householdId = data.id;
       inviteCode = data.invite_code;
+      inviteSyncStatus = 'ready';
       localStorage.setItem(householdKey, householdId);
+      local.replaceState(local.getState());
       return householdId;
     })();
     try {
       return await householdCreation;
+    } catch (error) {
+      inviteSyncStatus = 'failed';
+      local.replaceState(local.getState());
+      throw error;
     } finally {
       householdCreation = undefined;
     }
@@ -141,6 +150,8 @@ export function createSupabaseStore() {
     ready,
     getConnectionError: () => readyError,
     getInviteCode: () => inviteCode,
+    getInviteSyncStatus: () => inviteSyncStatus,
+    hasHousehold: () => Boolean(householdId),
     hasJoinedHousehold: () => localStorage.getItem(joinedHouseholdKey) === householdId,
     async verifyManagementPassword(password) {
       await ready;

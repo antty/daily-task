@@ -48,6 +48,20 @@ test('first-time family setup creates a household before syncing the first membe
   assert.match(store, /addMember\(name, avatar\)[\s\S]*await ensureHousehold\(\)[\s\S]*from\('household_members'\)\.insert/);
 });
 
+test('first-time family setup explains the initial password and keeps invite status current', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  assert.match(html, /id="member-gate-title"/);
+  assert.match(html, /id="member-gate-copy"/);
+  assert.match(html, /id="family-password-hint"/);
+  assert.match(app, /首次管理密码为 123456，进入后请及时修改。/);
+  assert.match(app, /store\.hasHousehold\?\.\(\)/);
+  assert.match(app, /store\.getInviteSyncStatus\?\.\(\)/);
+  assert.match(store, /let inviteSyncStatus = 'idle'/);
+  assert.match(store, /inviteSyncStatus = 'syncing'/);
+  assert.match(store, /getInviteSyncStatus: \(\) => inviteSyncStatus/);
+});
+
 test('family management is only available from the pre-entry dialog behind a password step', () => {
   const home = html.match(/<section id="home-view"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(home, /open-member-dialog/);
@@ -247,7 +261,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260719-family-init"/);
+  assert.match(html, /src="src\/app\.js\?v=20260719-family-onboarding"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -257,7 +271,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260719-family-init']);
+  assert.deepEqual([...new Set(versions)], ['20260719-family-onboarding']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -391,7 +405,7 @@ test('family invite flow exposes an invite code and joining entry', async () => 
   assert.match(app, /hasJoinedHousehold/);
   assert.match(app, /store\.hasJoinedHousehold\?\.\(\) \|\| data\.members\.length/);
   assert.match(app, /需要执行迁移/);
-  assert.match(remoteStore, /else \{ householdId = ''; inviteCode = ''; \}/);
+  assert.match(remoteStore, /else \{ householdId = ''; inviteCode = ''; inviteSyncStatus = 'idle'; \}/);
 });
 
 test('future task dates stay unmarked and completion uploads have a preview', async () => {
@@ -443,7 +457,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260719-family-init');
+  assert.equal(versions[0], '20260719-family-onboarding');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
