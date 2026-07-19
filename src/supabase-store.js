@@ -125,6 +125,16 @@ export function createSupabaseStore() {
     }
   }
 
+  function clearLocalHousehold() {
+    householdId = '';
+    inviteCode = '';
+    inviteSyncStatus = 'idle';
+    ipadState = { types: [], limits: [], entries: [] };
+    localStorage.removeItem(householdKey);
+    localStorage.removeItem(joinedHouseholdKey);
+    local.replaceState({ members: [], types: [], tasks: [] });
+  }
+
   async function loadRemote() {
     const [{ data: members, error: memberError }, { data: types, error: typeError }, { data: tasks, error: taskError }, { data: completions, error: completionError }] = await Promise.all([
       supabase.from('household_members').select('*').eq('household_id', householdId),
@@ -186,18 +196,19 @@ export function createSupabaseStore() {
       return inviteCode;
     },
     async leaveHousehold() {
-      await ready;
-      if (localStorage.getItem(joinedHouseholdKey) !== householdId || !householdId) return false;
-      const { error } = await supabase.rpc('leave_household', { target_household: householdId });
-      if (error) throw error;
-      householdId = '';
-      inviteCode = '';
-      inviteSyncStatus = 'idle';
-      ipadState = { types: [], limits: [], entries: [] };
-      localStorage.removeItem(householdKey);
-      localStorage.removeItem(joinedHouseholdKey);
-      local.replaceState({ members: [], types: [], tasks: [] });
-      return true;
+      const targetHousehold = householdId || localStorage.getItem(householdKey);
+      if (localStorage.getItem(joinedHouseholdKey) !== targetHousehold || !targetHousehold) return { left: false, remoteSynced: false };
+      let remoteSynced = false;
+      try {
+        await ready;
+        const { error } = await supabase.rpc('leave_household', { target_household: targetHousehold });
+        if (error) throw error;
+        remoteSynced = true;
+      } catch (error) {
+        console.warn('Supabase household access revocation failed', error);
+      }
+      clearLocalHousehold();
+      return { left: true, remoteSynced };
     },
     async verifyManagementPassword(password) {
       await ready;

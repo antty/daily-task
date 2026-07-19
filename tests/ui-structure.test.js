@@ -92,6 +92,16 @@ test('entry actions distinguish creating, joining, and leaving a household safel
   assert.match(migration, /家庭创建者不能退出/);
 });
 
+test('leaving a family clears this device even when cloud access revocation fails', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  assert.match(store, /function clearLocalHousehold\(\)/);
+  assert.match(store, /async leaveHousehold\(\)[\s\S]*catch \(error\)[\s\S]*clearLocalHousehold\(\)/);
+  assert.match(store, /return \{ left: true, remoteSynced \}/);
+  assert.match(app, /const result = await store\.leaveHousehold\(\)/);
+  assert.match(app, /result\.remoteSynced/);
+});
+
 test('family entry waits for household hydration before choosing create or manage', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(app, /store\.ready\.then\(\(\) => \{ render\(\); if \(!ipadPageMemberId\) \$\('#member-gate'\)\.showModal\(\)/);
@@ -297,7 +307,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260719-family-retry"/);
+  assert.match(html, /src="src\/app\.js\?v=20260719-family-exit-fallback"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -307,7 +317,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260719-family-retry']);
+  assert.deepEqual([...new Set(versions)], ['20260719-family-exit-fallback']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -493,7 +503,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260719-family-retry');
+  assert.equal(versions[0], '20260719-family-exit-fallback');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
