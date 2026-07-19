@@ -153,6 +153,20 @@ export function createSupabaseStore() {
     getInviteSyncStatus: () => inviteSyncStatus,
     hasHousehold: () => Boolean(householdId),
     hasJoinedHousehold: () => localStorage.getItem(joinedHouseholdKey) === householdId,
+    async leaveHousehold() {
+      await ready;
+      if (localStorage.getItem(joinedHouseholdKey) !== householdId || !householdId) return false;
+      const { error } = await supabase.rpc('leave_household', { target_household: householdId });
+      if (error) throw error;
+      householdId = '';
+      inviteCode = '';
+      inviteSyncStatus = 'idle';
+      ipadState = { types: [], limits: [], entries: [] };
+      localStorage.removeItem(householdKey);
+      localStorage.removeItem(joinedHouseholdKey);
+      local.replaceState({ members: [], types: [], tasks: [] });
+      return true;
+    },
     async verifyManagementPassword(password) {
       await ready;
       if (!householdId) return canUseInitialFamilyPassword({ hasHousehold: false, password });

@@ -474,3 +474,13 @@ body{background:url('assets/motivation-background.png') center top / cover fixed
     font-size: 13px;
   }
 }
+
+/* 家庭入口：首次创建保持主次层级，退出操作独立弱化。 */
+.gate-dialog .gate-head .gate-create-entry { min-height: 36px; padding: 7px 12px; border-radius: 9px; font-size: 13px; box-shadow: 0 5px 12px rgb(85 64 143 / 18%); }
+.family-danger-zone { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 13px; border-top: 1px solid #f0e8ed; }
+.family-danger-zone p { color: var(--muted); font-size: 11px; line-height: 1.45; }
+.danger-link { flex: none; color: var(--danger); font-size: 12px; }
+.leave-family-dialog { width: min(92vw, 390px); padding: 24px; }
+.leave-family-dialog .dialog-head { margin-bottom: 18px; }
+.leave-family-dialog .dialog-head p { margin-top: 5px; color: var(--muted); font-size: 13px; }
+@media (max-width: 600px) { .family-danger-zone { align-items: flex-start; flex-direction: column; } .leave-family-dialog { padding: 20px; } }

@@ -62,6 +62,31 @@ test('first-time family setup explains the initial password and keeps invite sta
   assert.match(store, /getInviteSyncStatus: \(\) => inviteSyncStatus/);
 });
 
+test('entry actions distinguish creating, joining, and leaving a household safely', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  const schema = await readFile(new URL('../supabase/schema.sql', import.meta.url), 'utf8');
+  const migration = await readFile(new URL('../supabase/leave-household-migration.sql', import.meta.url), 'utf8');
+  assert.match(html, /id="open-family-password" class="primary gate-create-entry">创建家庭/);
+  assert.match(html, /id="leave-family-zone"[^>]*hidden/);
+  assert.match(html, /id="leave-family-dialog"/);
+  assert.match(app, /isFirstFamilySetup \? '创建家庭' : '管理家人'/);
+  assert.match(app, /store\.hasJoinedHousehold\?\.\(\)/);
+  assert.match(app, /await store\.leaveHousehold\(\)/);
+  assert.match(store, /async leaveHousehold\(\)/);
+  assert.match(store, /rpc\('leave_household'/);
+  assert.match(migration, /function public\.leave_household/);
+  assert.match(schema, /function public\.leave_household/);
+  assert.match(migration, /delete from public\.household_access/);
+  assert.match(migration, /家庭创建者不能退出/);
+});
+
+test('family entry waits for household hydration before choosing create or manage', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(app, /store\.ready\.then\(\(\) => \{ render\(\); if \(!ipadPageMemberId\) \$\('#member-gate'\)\.showModal\(\)/);
+  assert.doesNotMatch(app, /if \(!ipadPageMemberId\) \$\('#member-gate'\)\.showModal\(\); else \{/);
+});
+
 test('family management is only available from the pre-entry dialog behind a password step', () => {
   const home = html.match(/<section id="home-view"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(home, /open-member-dialog/);
@@ -261,7 +286,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260719-family-onboarding"/);
+  assert.match(html, /src="src\/app\.js\?v=20260719-family-exit"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -271,7 +296,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260719-family-onboarding']);
+  assert.deepEqual([...new Set(versions)], ['20260719-family-exit']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -363,7 +388,7 @@ test('task completion has a dedicated note and image dialog', () => {
   assert.match(html, /<dialog id="completion-dialog"/);
   assert.match(html, /name="completion-image" type="file" accept="image\/\*"/);
   assert.doesNotMatch(html, />日常<\/h1>/);
-  assert.match(html, /选择家庭成员后进入任务系统/);
+  assert.match(html, /添加第一位成员后，即可开始管理任务/);
 });
 
 test('task content opens detail while only the checkbox controls completion', async () => {
@@ -398,7 +423,7 @@ test('family invite flow exposes an invite code and joining entry', async () => 
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   const remoteStore = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
   assert.match(html, /id="open-join-family"/);
-  assert.match(html, /id="open-join-family" class="text-button" aria-pressed="false"/);
+  assert.match(html, /id="open-join-family" class="text-button gate-join-entry" aria-pressed="false"/);
   assert.match(html, /id="join-family-form"/);
   assert.match(html, /id="family-invite-code"/);
   assert.match(app, /joinHousehold/);
@@ -457,7 +482,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260719-family-onboarding');
+  assert.equal(versions[0], '20260719-family-exit');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
