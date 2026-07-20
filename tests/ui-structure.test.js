@@ -138,6 +138,21 @@ test('family sync failures explain the required recovery migration', async () =>
   assert.match(recovery, /create or replace function public\.leave_household/);
 });
 
+test('family creation uses a restricted server-side RPC', async () => {
+  const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  const schema = await readFile(new URL('../supabase/schema.sql', import.meta.url), 'utf8');
+  const recovery = await readFile(new URL('../supabase/family-sync-recovery-migration.sql', import.meta.url), 'utf8');
+  for (const sql of [schema, recovery]) {
+    assert.match(sql, /function public\.create_household_with_invite\(requested_invite_code text\)/);
+    assert.match(sql, /current_user_id uuid := auth\.uid\(\)/);
+    assert.match(sql, /security definer set search_path = ''/);
+    assert.match(sql, /revoke execute on function public\.create_household_with_invite\(text\) from public, anon/);
+    assert.match(sql, /grant execute on function public\.create_household_with_invite\(text\) to authenticated/);
+  }
+  assert.match(store, /rpc\('create_household_with_invite'/);
+  assert.doesNotMatch(store, /from\('households'\)\.insert/);
+});
+
 test('family entry waits for household hydration before choosing create or manage', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(app, /store\.ready\.then\(\(\) => \{ render\(\); if \(!ipadPageMemberId\) \$\('#member-gate'\)\.showModal\(\)/);

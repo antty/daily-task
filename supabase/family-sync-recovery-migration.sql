@@ -51,6 +51,31 @@ create trigger initialize_household_management_secret
 after insert on public.households
 for each row execute function private.initialize_household_management_secret();
 
+create or replace function public.create_household_with_invite(requested_invite_code text)
+returns table(id uuid, invite_code text)
+language plpgsql security definer set search_path = '' as $$
+declare
+  current_user_id uuid := auth.uid();
+  normalized_code text := upper(btrim(coalesce(requested_invite_code, '')));
+begin
+  if current_user_id is null then
+    raise exception '需要登录后创建家庭' using errcode = '42501';
+  end if;
+
+  if normalized_code !~ '^[A-HJ-NP-Z2-9]{8}$' then
+    raise exception '邀请码格式无效' using errcode = '22023';
+  end if;
+
+  return query
+  insert into public.households as created (id, owner_id, invite_code)
+  values (gen_random_uuid(), current_user_id, normalized_code)
+  returning created.id, created.invite_code;
+end;
+$$;
+
+revoke execute on function public.create_household_with_invite(text) from public, anon;
+grant execute on function public.create_household_with_invite(text) to authenticated;
+
 create or replace function public.verify_household_management_password(
   target_household uuid,
   candidate_password text
