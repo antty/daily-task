@@ -152,7 +152,7 @@ test('family creation uses a restricted server-side RPC', async () => {
   }
   assert.match(ensureHousehold, /rpc\('create_household_with_invite', \{ requested_invite_code: code \}\)/);
   assert.match(ensureHousehold, /rpc\('create_household_with_invite'[\s\S]*?\.single\(\)/);
-  assert.doesNotMatch(ensureHousehold, /\.from\('households'\)\.insert\(/);
+  assert.doesNotMatch(ensureHousehold, /\.from\(['"]households['"]\)\.(?:insert|upsert|update|delete)\(/);
 });
 
 test('family entry waits for household hydration before choosing create or manage', async () => {
