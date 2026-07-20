@@ -43,7 +43,7 @@ test('the Supabase store delegates password operations to restricted RPCs', asyn
 test('first-time family setup creates a household before syncing the first member', async () => {
   const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
   assert.match(store, /async function ensureHousehold\(\)/);
-  assert.match(store, /from\('households'\)\.insert\(/);
+  assert.match(store, /rpc\('create_household_with_invite'/);
   assert.match(store, /verifyManagementPassword\(password\)[\s\S]*if \(!householdId\) return canUseInitialFamilyPassword/);
   assert.match(store, /addMember\(name, avatar\)[\s\S]*await syncFirstFamilySetup\(\)/);
 });
@@ -358,7 +358,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260720-family-resume2"/);
+  assert.match(html, /src="src\/app\.js\?v=20260720-family-rpc"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -368,7 +368,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260720-family-resume2']);
+  assert.deepEqual([...new Set(versions)], ['20260720-family-rpc']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -554,7 +554,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260720-family-resume2');
+  assert.equal(versions[0], '20260720-family-rpc');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {

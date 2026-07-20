@@ -109,9 +109,10 @@ export function createSupabaseStore() {
     inviteSyncStatus = 'syncing';
     local.replaceState(local.getState());
     householdCreation = (async () => {
-      const id = crypto.randomUUID();
       const code = createInviteCode();
-      const { data, error } = await supabase.from('households').insert({ id, owner_id: userId, invite_code: code }).select('id, invite_code').single();
+      const { data, error } = await supabase
+        .rpc('create_household_with_invite', { requested_invite_code: code })
+        .single();
       if (error) throw error;
       householdId = data.id;
       inviteCode = data.invite_code;
