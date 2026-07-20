@@ -51,7 +51,17 @@ export function createSupabaseStore() {
   const sync = (work) => ready.then(work).catch((error) => { readyError = error; console.error('Supabase sync failed', error); });
 
   async function refreshIpadState() {
-    if (!householdId) return;
+    if (!householdId) {
+      if (local.getState().members.length) {
+        try {
+          await syncFirstFamilySetup();
+        } catch (error) {
+          readyError = error;
+          console.error('Supabase family recovery failed', error);
+        }
+      }
+      return;
+    }
     const [{ data: types, error: typeError }, { data: limits, error: limitError }, { data: entries, error: entryError }] = await Promise.all([
       supabase.from('ipad_usage_types').select('*').eq('household_id', householdId),
       supabase.from('ipad_daily_limits').select('*').eq('household_id', householdId),
