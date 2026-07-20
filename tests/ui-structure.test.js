@@ -140,6 +140,7 @@ test('family sync failures explain the required recovery migration', async () =>
 
 test('family creation uses a restricted server-side RPC', async () => {
   const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
+  const ensureHousehold = store.match(/async function ensureHousehold\(\)[\s\S]*?(?=\n  async function syncLocalMembers\(\))/)?.[0] || '';
   const schema = await readFile(new URL('../supabase/schema.sql', import.meta.url), 'utf8');
   const recovery = await readFile(new URL('../supabase/family-sync-recovery-migration.sql', import.meta.url), 'utf8');
   for (const sql of [schema, recovery]) {
@@ -149,8 +150,9 @@ test('family creation uses a restricted server-side RPC', async () => {
     assert.match(sql, /revoke execute on function public\.create_household_with_invite\(text\) from public, anon/);
     assert.match(sql, /grant execute on function public\.create_household_with_invite\(text\) to authenticated/);
   }
-  assert.match(store, /rpc\('create_household_with_invite'/);
-  assert.doesNotMatch(store, /from\('households'\)\.insert/);
+  assert.match(ensureHousehold, /rpc\('create_household_with_invite', \{ requested_invite_code: code \}\)/);
+  assert.match(ensureHousehold, /rpc\('create_household_with_invite'[\s\S]*?\.single\(\)/);
+  assert.doesNotMatch(ensureHousehold, /\.from\('households'\)\.insert\(/);
 });
 
 test('family entry waits for household hydration before choosing create or manage', async () => {
