@@ -51,17 +51,7 @@ export function createSupabaseStore() {
   const sync = (work) => ready.then(work).catch((error) => { readyError = error; console.error('Supabase sync failed', error); });
 
   async function refreshIpadState() {
-    if (!householdId) {
-      if (local.getState().members.length) {
-        try {
-          await syncFirstFamilySetup();
-        } catch (error) {
-          readyError = error;
-          console.error('Supabase family recovery failed', error);
-        }
-      }
-      return;
-    }
+    if (!householdId) return;
     const [{ data: types, error: typeError }, { data: limits, error: limitError }, { data: entries, error: entryError }] = await Promise.all([
       supabase.from('ipad_usage_types').select('*').eq('household_id', householdId),
       supabase.from('ipad_daily_limits').select('*').eq('household_id', householdId),
@@ -95,7 +85,17 @@ export function createSupabaseStore() {
     if (preferred) { householdId = preferred.id; inviteCode = preferred.invite_code; inviteSyncStatus = 'ready'; }
     else if (availableHouseholds.length) { householdId = availableHouseholds[0].id; inviteCode = availableHouseholds[0].invite_code; inviteSyncStatus = 'ready'; }
     else { householdId = ''; inviteCode = ''; inviteSyncStatus = 'idle'; }
-    if (!householdId) return;
+    if (!householdId) {
+      if (local.getState().members.length) {
+        try {
+          await syncFirstFamilySetup();
+        } catch (error) {
+          readyError = error;
+          console.error('Supabase family recovery failed', error);
+        }
+      }
+      return;
+    }
     localStorage.setItem(householdKey, householdId);
     const remote = await loadRemote();
     if (remote.members.length || remote.tasks.length || remote.types.length) local.replaceState(remote);

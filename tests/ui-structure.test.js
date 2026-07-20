@@ -76,8 +76,11 @@ test('failed first-family sync preserves local members and exposes a retry actio
 test('startup resumes family creation when local members exist without a household', async () => {
   const store = await readFile(new URL('../src/supabase-store.js', import.meta.url), 'utf8');
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
-  assert.match(store, /if \(!householdId\)[\s\S]*local\.getState\(\)\.members\.length[\s\S]*await syncFirstFamilySetup\(\)/);
-  assert.match(store, /await syncFirstFamilySetup\(\)[\s\S]*catch \(error\)[\s\S]*readyError = error/);
+  const connect = store.match(/async function connect\(\)[\s\S]*?(?=\n  async function ensureHousehold\(\))/)?.[0] || '';
+  const refreshIpad = store.match(/async function refreshIpadState\(\)[\s\S]*?(?=\n  async function connect\(\))/)?.[0] || '';
+  assert.match(connect, /if \(!householdId\)[\s\S]*local\.getState\(\)\.members\.length[\s\S]*await syncFirstFamilySetup\(\)/);
+  assert.match(connect, /await syncFirstFamilySetup\(\)[\s\S]*catch \(error\)[\s\S]*readyError = error/);
+  assert.doesNotMatch(refreshIpad, /syncFirstFamilySetup/);
   assert.match(app, /const hasLocalMembers = data\.members\.length > 0/);
   assert.match(app, /恢复家庭同步/);
 });
@@ -340,7 +343,7 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260720-family-resume"/);
+  assert.match(html, /src="src\/app\.js\?v=20260720-family-resume2"/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -350,7 +353,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260720-family-resume']);
+  assert.deepEqual([...new Set(versions)], ['20260720-family-resume2']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -536,7 +539,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260720-family-resume');
+  assert.equal(versions[0], '20260720-family-resume2');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
