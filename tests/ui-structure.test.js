@@ -152,7 +152,7 @@ test('family creation uses a restricted server-side RPC', async () => {
   }
   assert.match(ensureHousehold, /rpc\('create_household_with_invite', \{ requested_invite_code: code \}\)/);
   assert.match(ensureHousehold, /rpc\('create_household_with_invite'[\s\S]*?\.single\(\)/);
-  assert.doesNotMatch(ensureHousehold, /\.from\(['"]households['"]\)\.(?:insert|upsert|update|delete)\(/);
+  assert.doesNotMatch(store, /\.from\(['"]households['"]\)\.(?:insert|upsert|update|delete)\(/);
 });
 
 test('family entry waits for household hydration before choosing create or manage', async () => {
@@ -361,6 +361,11 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 
 test('the browser entry script uses the current release version after a production fix', () => {
   assert.match(html, /src="src\/app\.js\?v=20260720-family-rpc"/);
+});
+
+test('the browser entry module loads the Supabase store at the current release version', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(app, /from '\.\/supabase-store\.js\?v=20260720-family-rpc'/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
