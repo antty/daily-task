@@ -617,7 +617,7 @@ test('product introduction page exposes the public landing structure', async () 
 
 test('product introduction page uses local accessible screenshots', async () => {
   const intro = await readFile(new URL('../intro.html', import.meta.url), 'utf8');
-  assert.match(intro, /href="intro\.css\?v=20260721-intro-video"/);
+  assert.match(intro, /href="intro\.css\?v=20260721-intro-video-top"/);
   for (const name of ['daily-calendar', 'task-completion', 'ipad-usage']) {
     assert.match(intro, new RegExp(`src="assets/intro/${name}\\.webp"[^>]+alt="[^"]+"[^>]+width="\\d+"[^>]+height="\\d+"`));
   }
@@ -627,6 +627,7 @@ test('intro product video teaches the desktop web workflow without autoplay', as
   const intro = await readFile(new URL('../intro.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('../intro.css', import.meta.url), 'utf8');
   assert.match(intro, /id="product-video"/);
+  assert.ok(intro.indexOf('id="product-video"') < intro.indexOf('id="intro-hero"'), 'product video should be visible before the hero content');
   assert.match(intro, /src="assets\/intro\/video\/product-tour\.mp4"/);
   assert.match(intro, /poster="assets\/intro\/video\/product-tour-poster\.webp"/);
   assert.match(intro, /src="assets\/intro\/video\/product-tour-zh\.vtt"/);

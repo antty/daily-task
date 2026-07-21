@@ -349,6 +349,8 @@ a:focus-visible {
 
 .intro-product-video {
   position: relative;
+  padding-top: clamp(48px, 6vw, 84px);
+  padding-bottom: clamp(68px, 8vw, 108px);
   background: var(--intro-tint);
   overflow: hidden;
 }
@@ -368,7 +370,7 @@ a:focus-visible {
 .intro-video-frame {
   position: relative;
   width: min(100%, 1040px);
-  margin: 40px auto 0;
+  margin: 28px auto 0;
   padding: 10px;
   border: 1px solid var(--intro-border);
   border-radius: var(--intro-radius-md);
@@ -836,6 +838,11 @@ a:focus-visible {
 
   .intro-section {
     padding-block: 64px;
+  }
+
+  .intro-product-video {
+    padding-top: 42px;
+    padding-bottom: 56px;
   }
 
   .intro-hero {
