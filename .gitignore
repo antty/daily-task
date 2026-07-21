@@ -1,3 +1,8 @@
 dist/
 .worktrees/
 .superpowers/
+video/intro-product-tour/AGENTS.md
+video/intro-product-tour/CLAUDE.md
+video/intro-product-tour/capture/
+video/intro-product-tour/renders/
+video/intro-product-tour/snapshots/

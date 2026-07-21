@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "PingFang SC";
+        src: local("PingFang SC");
+      }
+
+      @font-face {
+        font-family: "Microsoft YaHei";
+        src: local("Microsoft YaHei");
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        margin: 0;
+        overflow: hidden;
+        background: #fffaf4;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+
+      #root,
+      .scene-host,
+      .transition-wash {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+      }
+
+      #root {
+        overflow: hidden;
+        background: #fffaf4;
+      }
+
+      .scene-host {
+        overflow: hidden;
+      }
+
+      .transition-wash {
+        z-index: 20;
+        pointer-events: none;
+        opacity: 0;
+        background:
+          radial-gradient(circle at 50% 50%, rgba(239, 233, 251, .96) 0%, rgba(255, 250, 244, .92) 50%, rgba(255, 250, 244, 0) 78%);
+        filter: blur(8px);
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="60.423"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div
+        id="scene-1"
+        class="clip scene-host"
+        data-composition-id="scene-1-hook"
+        data-composition-src="compositions/beat-1-hook.html"
+        data-start="0"
+        data-duration="9.408"
+        data-track-index="1"
+      ></div>
+      <div
+        id="scene-2"
+        class="clip scene-host"
+        data-composition-id="scene-2-family"
+        data-composition-src="compositions/beat-2-family.html"
+        data-start="9.408"
+        data-duration="10.057"
+        data-track-index="1"
+      ></div>
+      <div
+        id="scene-3"
+        class="clip scene-host"
+        data-composition-id="scene-3-tasks"
+        data-composition-src="compositions/beat-3-tasks.html"
+        data-start="19.465"
+        data-duration="12.331"
+        data-track-index="1"
+      ></div>
+      <div
+        id="scene-4"
+        class="clip scene-host"
+        data-composition-id="scene-4-record"
+        data-composition-src="compositions/beat-4-record.html"
+        data-start="31.796"
+        data-duration="9.892"
+        data-track-index="1"
+      ></div>
+      <div
+        id="scene-5"
+        class="clip scene-host"
+        data-composition-id="scene-5-ipad"
+        data-composition-src="compositions/beat-5-ipad.html"
+        data-start="41.688"
+        data-duration="11.610"
+        data-track-index="1"
+      ></div>
+      <div
+        id="scene-6"
+        class="clip scene-host"
+        data-composition-id="scene-6-cta"
+        data-composition-src="compositions/beat-6-cta.html"
+        data-start="53.298"
+        data-duration="7.125"
+        data-track-index="1"
+      ></div>
+
+      <div id="wash-1" class="clip transition-wash" data-start="9.108" data-duration="0.600" data-track-index="2"></div>
+      <div id="wash-2" class="clip transition-wash" data-start="19.165" data-duration="0.600" data-track-index="2"></div>
+      <div id="wash-3" class="clip transition-wash" data-start="31.496" data-duration="0.600" data-track-index="2"></div>
+      <div id="wash-4" class="clip transition-wash" data-start="41.388" data-duration="0.600" data-track-index="2"></div>
+      <div id="wash-5" class="clip transition-wash" data-start="52.998" data-duration="0.600" data-track-index="2"></div>
+
+      <audio
+        id="narration"
+        class="clip"
+        src="narration.wav"
+        data-start="0"
+        data-duration="60.423"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+    </main>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const mainTimeline = gsap.timeline({ paused: true });
+      const transitionStarts = [9.108, 19.165, 31.496, 41.388, 52.998];
+
+      transitionStarts.forEach(function (start, index) {
+        const wash = "#wash-" + (index + 1);
+        mainTimeline.fromTo(
+          wash,
+          { opacity: 0, scale: 0.92, filter: "blur(18px)" },
+          { opacity: 0.86, scale: 1.03, filter: "blur(6px)", duration: 0.3, ease: "sine.inOut" },
+          start,
+        );
+        mainTimeline.to(
+          wash,
+          { opacity: 0, scale: 1.08, filter: "blur(20px)", duration: 0.3, ease: "sine.inOut" },
+          start + 0.3,
+        );
+        mainTimeline.set(wash, { opacity: 0, visibility: "hidden" }, start + 0.6);
+      });
+
+      window.__timelines.main = mainTimeline;
+    </script>
+  </body>
+</html>

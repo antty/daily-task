@@ -1,0 +1,254 @@
+<template id="beat-4-record-template">
+  <div
+    id="beat-4-record"
+    data-composition-id="beat-4-record"
+    data-start="0"
+    data-duration="9.892"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div class="b4-bg" aria-hidden="true">
+      <div class="b4-halo b4-halo-primary"></div>
+      <div class="b4-halo b4-halo-success"></div>
+      <div class="b4-ghost-word">记录</div>
+    </div>
+
+    <main class="b4-scene-content">
+      <header class="b4-heading-row">
+        <div class="b4-check-badge" aria-hidden="true"><span>✓</span></div>
+        <div class="b4-heading-copy">
+          <p class="b4-kicker">完成记录</p>
+          <h2 class="b4-title">每一次坚持，都有迹可循</h2>
+        </div>
+        <div class="b4-summary">
+          <span>备注</span>
+          <i></i>
+          <span>图片</span>
+          <i></i>
+          <b>成长记录</b>
+        </div>
+      </header>
+
+      <section class="b4-browser" aria-label="习惯养成任务完成记录桌面页面">
+        <div class="b4-browser-bar">
+          <div class="b4-browser-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="b4-address">习惯养成 · 任务完成详情</div>
+          <div class="b4-secure"><span>✓</span> 已保存</div>
+        </div>
+        <div class="b4-viewport">
+          <img
+            class="b4-screenshot"
+            src="assets/task-completion.webp"
+            alt="完整的桌面任务完成备注与图片记录页面"
+            crossorigin="anonymous"
+          />
+
+          <div class="b4-note-highlight" aria-hidden="true">
+            <div class="b4-typing-line"></div>
+            <div class="b4-typing-cursor"></div>
+          </div>
+          <div class="b4-callout b4-callout-note">
+            <span class="b4-callout-icon">✎</span>
+            <div><b>写下备注</b><small>留住完成时的想法</small></div>
+          </div>
+
+          <div class="b4-photo-highlight" aria-hidden="true">
+            <div class="b4-photo-mark">✓</div>
+          </div>
+          <div class="b4-callout b4-callout-photo">
+            <span class="b4-callout-icon">▣</span>
+            <div><b>上传图片</b><small>让进步变得看得见</small></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <style>
+      @font-face { font-family: "PingFang SC"; src: local("PingFang SC"); }
+      @font-face { font-family: "Microsoft YaHei"; src: local("Microsoft YaHei"); }
+
+      #beat-4-record {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        color: #251f2d;
+        background: radial-gradient(circle at 86% 14%, rgba(239, 233, 251, 0.95), rgba(239, 233, 251, 0) 29%), radial-gradient(circle at 12% 90%, rgba(61, 139, 106, 0.12), rgba(61, 139, 106, 0) 31%), #fffaf4;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+
+      #beat-4-record * { box-sizing: border-box; }
+      #beat-4-record .b4-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+      #beat-4-record .b4-halo { position: absolute; border-radius: 50%; }
+      #beat-4-record .b4-halo-primary { width: 420px; height: 420px; right: -120px; top: -130px; background-color: rgba(111, 82, 181, 0.12); }
+      #beat-4-record .b4-halo-success { width: 470px; height: 470px; left: -170px; bottom: -180px; background-color: rgba(61, 139, 106, 0.09); }
+      #beat-4-record .b4-ghost-word { position: absolute; right: 108px; bottom: 62px; color: rgba(111, 82, 181, 0.14); font-size: 220px; font-weight: 900; letter-spacing: -0.06em; }
+
+      #beat-4-record .b4-scene-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        padding: 34px 120px 120px;
+        gap: 20px;
+      }
+
+      #beat-4-record .b4-heading-row {
+        display: grid;
+        grid-template-columns: 74px minmax(0, 1fr) auto;
+        align-items: center;
+        width: 1520px;
+        min-height: 86px;
+        gap: 20px;
+      }
+
+      #beat-4-record .b4-check-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 66px;
+        height: 66px;
+        border: 2px solid rgba(61, 139, 106, 0.28);
+        border-radius: 50%;
+        background-color: rgba(61, 139, 106, 0.12);
+        box-shadow: 0 0 0 10px rgba(61, 139, 106, 0.06);
+      }
+      #beat-4-record .b4-check-badge span { color: #3d8b6a; font-size: 37px; font-weight: 900; }
+      #beat-4-record .b4-heading-copy { display: flex; align-items: baseline; gap: 22px; min-width: 0; }
+      #beat-4-record .b4-kicker { color: #6f52b5; font-size: 22px; font-weight: 800; letter-spacing: 0.16em; white-space: nowrap; }
+      #beat-4-record .b4-title { margin: 0; font-size: 60px; font-weight: 850; line-height: 1.05; letter-spacing: -0.045em; white-space: nowrap; }
+
+      #beat-4-record .b4-summary {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 13px 18px;
+        border: 1px solid #e7e1ec;
+        border-radius: 999px;
+        background-color: rgba(255, 255, 255, 0.86);
+        color: #706879;
+        font-size: 19px;
+        font-weight: 700;
+        box-shadow: 0 12px 30px rgba(86, 59, 159, 0.08);
+      }
+      #beat-4-record .b4-summary i { width: 5px; height: 5px; border-radius: 50%; background-color: #6f52b5; opacity: 0.45; }
+      #beat-4-record .b4-summary b { color: #3d8b6a; font-size: 20px; font-weight: 800; }
+
+      #beat-4-record .b4-browser {
+        display: flex;
+        flex-direction: column;
+        width: 1520px;
+        height: 750px;
+        overflow: hidden;
+        border: 1px solid #e7e1ec;
+        border-radius: 26px;
+        background-color: #fffaf4;
+        box-shadow: 0 36px 76px rgba(72, 53, 99, 0.18), 0 4px 14px rgba(72, 53, 99, 0.08);
+        transform-origin: center center;
+      }
+
+      #beat-4-record .b4-browser-bar {
+        display: grid;
+        grid-template-columns: 170px 1fr 170px;
+        align-items: center;
+        width: 100%;
+        height: 50px;
+        padding: 0 20px;
+        border-bottom: 1px solid #e7e1ec;
+        background-color: #fffaf4;
+      }
+      #beat-4-record .b4-browser-dots { display: flex; align-items: center; gap: 10px; }
+      #beat-4-record .b4-browser-dots i { display: block; width: 11px; height: 11px; border-radius: 50%; background-color: #e7e1ec; }
+      #beat-4-record .b4-browser-dots i:first-child { background-color: #3d8b6a; }
+      #beat-4-record .b4-address { justify-self: center; color: #706879; font-size: 18px; font-weight: 650; letter-spacing: 0.02em; }
+      #beat-4-record .b4-secure { display: flex; align-items: center; justify-content: flex-end; gap: 8px; color: #3d8b6a; font-size: 17px; font-weight: 750; }
+      #beat-4-record .b4-secure span { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background-color: rgba(61, 139, 106, 0.13); }
+
+      #beat-4-record .b4-viewport { position: relative; display: flex; align-items: center; justify-content: center; flex: 1; width: 100%; overflow: hidden; background-color: #f8f5fb; }
+      #beat-4-record .b4-screenshot { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center center; }
+
+      #beat-4-record .b4-note-highlight {
+        position: absolute;
+        left: 337px;
+        bottom: 60px;
+        width: 790px;
+        height: 78px;
+        overflow: hidden;
+        border: 3px solid #6f52b5;
+        border-radius: 16px;
+        background-color: rgba(239, 233, 251, 0.12);
+        box-shadow: 0 0 0 8px rgba(111, 82, 181, 0.07);
+      }
+      #beat-4-record .b4-typing-line { position: absolute; left: 18px; bottom: 15px; width: 240px; height: 5px; border-radius: 999px; background-color: rgba(111, 82, 181, 0.38); transform-origin: left center; }
+      #beat-4-record .b4-typing-cursor { position: absolute; left: 269px; bottom: 10px; width: 3px; height: 24px; border-radius: 999px; background-color: #6f52b5; }
+
+      #beat-4-record .b4-photo-highlight {
+        position: absolute;
+        left: 338px;
+        bottom: 16px;
+        width: 124px;
+        height: 108px;
+        border: 4px solid #fffaf4;
+        border-radius: 18px;
+        background-color: rgba(61, 139, 106, 0.08);
+        box-shadow: 0 16px 34px rgba(61, 139, 106, 0.22), 0 0 0 3px #3d8b6a;
+      }
+      #beat-4-record .b4-photo-mark { position: absolute; display: flex; align-items: center; justify-content: center; right: -12px; top: -12px; width: 34px; height: 34px; border-radius: 50%; background-color: #3d8b6a; color: #fffaf4; font-size: 19px; font-weight: 900; box-shadow: 0 7px 16px rgba(61, 139, 106, 0.25); }
+
+      #beat-4-record .b4-callout {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-width: 220px;
+        padding: 14px 17px;
+        border: 1px solid #e7e1ec;
+        border-radius: 17px;
+        background-color: rgba(255, 250, 244, 0.96);
+        box-shadow: 0 18px 40px rgba(72, 53, 99, 0.15);
+      }
+      #beat-4-record .b4-callout-icon { display: flex; align-items: center; justify-content: center; width: 39px; height: 39px; flex: 0 0 auto; border-radius: 12px; background-color: #efe9fb; color: #563b9f; font-size: 23px; font-weight: 850; }
+      #beat-4-record .b4-callout div { display: flex; flex-direction: column; gap: 3px; }
+      #beat-4-record .b4-callout b { color: #563b9f; font-size: 21px; font-weight: 800; }
+      #beat-4-record .b4-callout small { color: #706879; font-size: 16px; font-weight: 650; white-space: nowrap; }
+      #beat-4-record .b4-callout-note { right: 45px; bottom: 118px; }
+      #beat-4-record .b4-callout-photo { left: 72px; bottom: 30px; }
+      #beat-4-record .b4-callout-photo .b4-callout-icon { color: #3d8b6a; background-color: rgba(61, 139, 106, 0.12); }
+      #beat-4-record .b4-callout-photo b { color: #3d8b6a; }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const beat4Timeline = gsap.timeline({ paused: true });
+
+      beat4Timeline.fromTo("#beat-4-record .b4-halo-primary", { opacity: 0 }, { opacity: 0.72, duration: 0.9, ease: "sine.out" }, 0.12);
+      beat4Timeline.to("#beat-4-record .b4-halo-primary", { scale: 1.09, duration: 1.65, ease: "sine.inOut", yoyo: true, repeat: 4 }, 0.16);
+      beat4Timeline.fromTo("#beat-4-record .b4-halo-success", { opacity: 0 }, { opacity: 0.66, duration: 1.05, ease: "power1.out" }, 0.18);
+      beat4Timeline.to("#beat-4-record .b4-halo-success", { x: 22, duration: 2.0, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0.22);
+      beat4Timeline.fromTo("#beat-4-record .b4-ghost-word", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.86, ease: "power3.out" }, 0.28);
+
+      beat4Timeline.fromTo("#beat-4-record .b4-check-badge", { opacity: 0, scale: 0.42 }, { opacity: 1, scale: 1, duration: 0.72, ease: "elastic.out(1, 0.62)" }, 0.14);
+      beat4Timeline.fromTo("#beat-4-record .b4-kicker", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.44, ease: "expo.out" }, 0.24);
+      beat4Timeline.fromTo("#beat-4-record .b4-title", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "power4.out" }, 0.32);
+      beat4Timeline.fromTo("#beat-4-record .b4-summary", { opacity: 0, x: 38 }, { opacity: 1, x: 0, duration: 0.58, ease: "back.out(1.25)" }, 0.58);
+      beat4Timeline.fromTo("#beat-4-record .b4-browser", { opacity: 0, y: 58, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.82, ease: "expo.out" }, 0.36);
+      beat4Timeline.to("#beat-4-record .b4-browser", { boxShadow: "0 42px 86px rgba(72, 53, 99, 0.21), 0 5px 16px rgba(72, 53, 99, 0.10)", duration: 1.7, ease: "sine.inOut", yoyo: true, repeat: 2 }, 1.2);
+
+      beat4Timeline.fromTo("#beat-4-record .b4-note-highlight", { opacity: 0, scaleX: 0.72, transformOrigin: "left center" }, { opacity: 1, scaleX: 1, duration: 0.62, ease: "power3.out" }, 1.55);
+      beat4Timeline.fromTo("#beat-4-record .b4-callout-note", { opacity: 0, x: 34 }, { opacity: 1, x: 0, duration: 0.5, ease: "expo.out" }, 1.82);
+      beat4Timeline.fromTo("#beat-4-record .b4-typing-line", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 1.06, ease: "steps(8)" }, 2.28);
+      beat4Timeline.fromTo("#beat-4-record .b4-typing-cursor", { opacity: 0.18 }, { opacity: 1, duration: 0.38, ease: "sine.inOut", yoyo: true, repeat: 5 }, 2.22);
+
+      beat4Timeline.fromTo("#beat-4-record .b4-photo-highlight", { opacity: 0, y: 36, scale: 0.86 }, { opacity: 1, y: 0, scale: 1, duration: 0.66, ease: "back.out(1.35)" }, 4.52);
+      beat4Timeline.fromTo("#beat-4-record .b4-photo-mark", { opacity: 0, scale: 0.46 }, { opacity: 1, scale: 1, duration: 0.54, ease: "elastic.out(1, 0.62)" }, 4.94);
+      beat4Timeline.fromTo("#beat-4-record .b4-callout-photo", { opacity: 0, x: -34 }, { opacity: 1, x: 0, duration: 0.52, ease: "expo.out" }, 5.12);
+      beat4Timeline.to("#beat-4-record .b4-photo-highlight", { boxShadow: "0 20px 44px rgba(61, 139, 106, 0.29), 0 0 0 5px #3d8b6a", duration: 1.05, ease: "sine.inOut", yoyo: true, repeat: 2 }, 5.6);
+
+      window.__timelines["beat-4-record"] = beat4Timeline;
+    </script>
+  </div>
+</template>

@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>问题与价值</title>
+  </head>
+  <body>
+    <template id="beat-1-hook-template">
+      <div
+        id="beat-1-hook"
+        data-composition-id="beat-1-hook"
+        data-width="1920"
+        data-height="1080"
+      >
+        <div
+          id="beat-1-scene"
+          class="clip beat-1-scene"
+          data-start="0"
+          data-duration="9.408"
+          data-track-index="1"
+        >
+          <div class="beat-1-glow beat-1-glow-left" data-layout-ignore></div>
+          <div class="beat-1-glow beat-1-glow-right" data-layout-ignore></div>
+          <div class="beat-1-orbit beat-1-orbit-large" data-layout-ignore></div>
+          <div class="beat-1-orbit beat-1-orbit-small" data-layout-ignore></div>
+
+          <div class="beat-1-content">
+            <div class="beat-1-eyebrow">
+              <span class="beat-1-eyebrow-dot"></span>
+              <span>家庭习惯，一处看清</span>
+            </div>
+
+            <div class="beat-1-stage">
+              <svg
+                class="beat-1-links"
+                viewBox="0 0 1560 420"
+                aria-hidden="true"
+                data-layout-ignore
+              >
+                <path id="beat-1-path-a" d="M 273 112 C 485 118, 555 200, 736 210" />
+                <path id="beat-1-path-b" d="M 1285 112 C 1085 118, 1002 197, 824 210" />
+                <path id="beat-1-path-c" d="M 780 354 C 780 315, 780 280, 780 250" />
+              </svg>
+
+              <div id="beat-1-card-task" class="beat-1-keyword beat-1-keyword-task">
+                <span class="beat-1-keyword-icon">✓</span>
+                <span>任务容易忘</span>
+              </div>
+              <div id="beat-1-card-ipad" class="beat-1-keyword beat-1-keyword-ipad">
+                <span class="beat-1-keyword-icon">⌛</span>
+                <span>iPad 容易超时</span>
+              </div>
+              <div id="beat-1-card-family" class="beat-1-keyword beat-1-keyword-family">
+                <span class="beat-1-keyword-icon">⌂</span>
+                <span>进度难看清</span>
+              </div>
+
+              <div id="beat-1-core" class="beat-1-core">
+                <span class="beat-1-core-kicker">习惯养成</span>
+                <span class="beat-1-core-mark">一套系统</span>
+              </div>
+            </div>
+
+            <div class="beat-1-title-wrap">
+              <h1 id="beat-1-title">让好习惯，在家里自然发生</h1>
+              <p id="beat-1-subtitle">任务、完成记录与使用时间，从此清楚而有序。</p>
+            </div>
+          </div>
+        </div>
+
+        <style>
+          @font-face {
+            font-family: "PingFang SC";
+            src: local("PingFang SC");
+          }
+
+          @font-face {
+            font-family: "Microsoft YaHei";
+            src: local("Microsoft YaHei");
+          }
+
+          #beat-1-hook {
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            color: #251f2d;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+          }
+
+          #beat-1-hook * {
+            box-sizing: border-box;
+          }
+
+          .beat-1-scene {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #fffaf4;
+            background-image:
+              radial-gradient(circle at 16% 22%, rgba(239, 233, 251, 0.96) 0, rgba(239, 233, 251, 0) 31%),
+              radial-gradient(circle at 87% 75%, rgba(248, 245, 251, 0.96) 0, rgba(248, 245, 251, 0) 36%);
+          }
+
+          .beat-1-content {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 84px 180px 132px;
+            gap: 34px;
+          }
+
+          .beat-1-eyebrow {
+            display: flex;
+            align-items: center;
+            align-self: flex-start;
+            gap: 15px;
+            padding: 13px 22px;
+            border: 1px solid #e7e1ec;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.86);
+            color: #563b9f;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            box-shadow: 0 18px 50px rgba(86, 59, 159, 0.08);
+          }
+
+          .beat-1-eyebrow-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6f52b5;
+            box-shadow: 0 0 0 7px #efe9fb;
+          }
+
+          .beat-1-stage {
+            position: relative;
+            display: grid;
+            place-items: center;
+            width: 100%;
+            height: 420px;
+          }
+
+          .beat-1-links {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+          }
+
+          .beat-1-links path {
+            fill: none;
+            stroke: #9f87d3;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 10 12;
+          }
+
+          .beat-1-keyword {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            min-width: 290px;
+            padding: 24px 30px;
+            border: 1px solid #e7e1ec;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.94);
+            color: #251f2d;
+            font-size: 30px;
+            font-weight: 750;
+            box-shadow: 0 26px 70px rgba(86, 59, 159, 0.1);
+          }
+
+          .beat-1-keyword-icon {
+            display: grid;
+            place-items: center;
+            width: 54px;
+            height: 54px;
+            flex: 0 0 54px;
+            border-radius: 18px;
+            background: #efe9fb;
+            color: #6f52b5;
+            font-size: 28px;
+            font-weight: 850;
+          }
+
+          .beat-1-keyword-task {
+            top: 58px;
+            left: 30px;
+          }
+
+          .beat-1-keyword-ipad {
+            top: 58px;
+            right: 30px;
+          }
+
+          .beat-1-keyword-family {
+            bottom: 12px;
+            left: 50%;
+            margin-left: -176px;
+          }
+
+          .beat-1-core {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 250px;
+            height: 158px;
+            gap: 7px;
+            border: 2px solid #6f52b5;
+            border-radius: 44px;
+            background: #6f52b5;
+            color: #fffaf4;
+            box-shadow: 0 32px 85px rgba(86, 59, 159, 0.26);
+          }
+
+          .beat-1-core-kicker {
+            font-size: 22px;
+            font-weight: 650;
+            letter-spacing: 0.18em;
+            opacity: 0.84;
+          }
+
+          .beat-1-core-mark {
+            font-size: 42px;
+            font-weight: 850;
+            letter-spacing: -0.04em;
+          }
+
+          .beat-1-title-wrap {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            width: 100%;
+            gap: 60px;
+            padding-top: 6px;
+            border-top: 1px solid #e7e1ec;
+          }
+
+          .beat-1-title-wrap h1 {
+            max-width: 1050px;
+            color: #251f2d;
+            font-size: 78px;
+            font-weight: 850;
+            line-height: 1.08;
+            letter-spacing: -0.055em;
+          }
+
+          .beat-1-title-wrap p {
+            max-width: 390px;
+            padding-bottom: 8px;
+            color: #706879;
+            font-size: 25px;
+            font-weight: 560;
+            line-height: 1.55;
+          }
+
+          .beat-1-glow {
+            position: absolute;
+            z-index: 0;
+            border-radius: 50%;
+            filter: blur(10px);
+            opacity: 0.72;
+          }
+
+          .beat-1-glow-left {
+            top: 74px;
+            left: 64px;
+            width: 420px;
+            height: 420px;
+            background: rgba(239, 233, 251, 0.82);
+          }
+
+          .beat-1-glow-right {
+            right: 24px;
+            bottom: -70px;
+            width: 520px;
+            height: 520px;
+            background: rgba(248, 245, 251, 0.95);
+          }
+
+          .beat-1-orbit {
+            position: absolute;
+            z-index: 1;
+            border: 1px solid rgba(111, 82, 181, 0.12);
+            border-radius: 50%;
+          }
+
+          .beat-1-orbit-large {
+            top: -280px;
+            right: -160px;
+            width: 700px;
+            height: 700px;
+          }
+
+          .beat-1-orbit-small {
+            bottom: -160px;
+            left: -80px;
+            width: 390px;
+            height: 390px;
+          }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          window.__timelines = window.__timelines || {};
+          const beat1Timeline = gsap.timeline({ paused: true });
+
+          beat1Timeline.from(".beat-1-glow-left", { opacity: 0, scale: 0.82, duration: 1.35, ease: "sine.out" }, 0.18);
+          beat1Timeline.from(".beat-1-glow-right", { opacity: 0, scale: 0.88, duration: 1.1, ease: "power1.out" }, 0.28);
+          beat1Timeline.from(".beat-1-orbit-large", { opacity: 0, rotation: -12, scale: 0.92, duration: 1.55, ease: "sine.inOut" }, 0.24);
+          beat1Timeline.from(".beat-1-orbit-small", { opacity: 0, rotation: 10, duration: 1.25, ease: "power2.out" }, 0.36);
+          beat1Timeline.from(".beat-1-eyebrow", { x: -48, opacity: 0, duration: 0.62, ease: "expo.out" }, 0.34);
+
+          beat1Timeline.from("#beat-1-card-task", { x: -90, y: -18, opacity: 0, rotation: -2.2, duration: 0.72, ease: "power3.out" }, 0.72);
+          beat1Timeline.from("#beat-1-card-ipad", { x: 92, y: -14, opacity: 0, rotation: 2, duration: 0.8, ease: "expo.out" }, 0.92);
+          beat1Timeline.from("#beat-1-card-family", { y: 76, opacity: 0, scale: 0.92, duration: 0.68, ease: "back.out(1.35)" }, 1.16);
+          beat1Timeline.from("#beat-1-core", { opacity: 0, scale: 0.72, rotation: -3, duration: 0.76, ease: "power4.out" }, 1.36);
+
+          beat1Timeline.from("#beat-1-path-a", { strokeDashoffset: 310, opacity: 0, duration: 0.9, ease: "sine.inOut" }, 1.66);
+          beat1Timeline.from("#beat-1-path-b", { strokeDashoffset: 310, opacity: 0, duration: 0.86, ease: "power1.inOut" }, 1.78);
+          beat1Timeline.from("#beat-1-path-c", { strokeDashoffset: 150, opacity: 0, duration: 0.66, ease: "power2.inOut" }, 1.96);
+
+          beat1Timeline.from("#beat-1-title", { x: -18, y: 54, opacity: 0, duration: 0.9, ease: "expo.out" }, 2.18);
+          beat1Timeline.from("#beat-1-subtitle", { x: 34, opacity: 0, duration: 0.64, ease: "power3.out" }, 2.48);
+
+          beat1Timeline.to(".beat-1-glow-left", { scale: 1.05, x: 18, duration: 4.2, ease: "sine.inOut" }, 3.25);
+          beat1Timeline.to(".beat-1-glow-right", { scale: 0.97, y: -12, duration: 4.5, ease: "sine.inOut" }, 3.2);
+          beat1Timeline.to(".beat-1-orbit-large", { rotation: 7, duration: 5.2, ease: "none" }, 3.1);
+
+          window.__timelines["beat-1-hook"] = beat1Timeline;
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

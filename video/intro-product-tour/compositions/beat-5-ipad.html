@@ -1,0 +1,576 @@
+<template id="beat-5-ipad-template">
+  <div
+    id="beat-5-ipad"
+    data-composition-id="beat-5-ipad"
+    data-start="0"
+    data-duration="11.610"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div class="scene-content">
+      <div class="ambient ambient-left" aria-hidden="true"></div>
+      <div class="ambient ambient-right" aria-hidden="true"></div>
+      <div class="ghost-word" aria-hidden="true">SCREEN TIME</div>
+
+      <header class="scene-heading">
+        <div class="scene-kicker">iPad 使用管理</div>
+        <h1>先设额度，再安心使用</h1>
+      </header>
+
+      <div class="browser-shell">
+        <div class="browser-chrome">
+          <div class="browser-controls" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="browser-address">habit.family / ipad</div>
+          <div class="browser-security">安全记录</div>
+        </div>
+        <div class="screen-viewport">
+          <img
+            class="screen-image"
+            src="assets/ipad-usage.webp"
+            alt="iPad 使用管理桌面网页"
+          />
+
+          <div class="focus-ring quota-focus" aria-hidden="true"></div>
+          <div class="focus-ring record-focus" aria-hidden="true"></div>
+          <div class="focus-ring timer-focus" aria-hidden="true"></div>
+
+          <div class="callout quota-callout">
+            <span class="callout-index">01</span>
+            <span class="callout-copy">设置当天额度</span>
+            <span class="callout-rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="callout record-callout">
+            <span class="callout-index">02</span>
+            <span class="callout-copy">记录学习与娱乐</span>
+            <span class="callout-rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="timer-card">
+            <span class="timer-label">今日累计</span>
+            <strong class="timer-value">00:00</strong>
+            <span class="timer-unit">分钟</span>
+          </div>
+
+          <div class="overtime-chip">
+            <span class="overtime-dot" aria-hidden="true"></span>
+            <span>超时提醒</span>
+            <strong>+ 2 分钟</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @font-face {
+        font-family: "PingFang SC";
+        src: local("PingFang SC");
+        font-style: normal;
+        font-weight: 100 900;
+      }
+
+      @font-face {
+        font-family: "Microsoft YaHei";
+        src: local("Microsoft YaHei");
+        font-style: normal;
+        font-weight: 100 900;
+      }
+
+      #beat-5-ipad {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        color: #251f2d;
+        background-color: #fffaf4;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+
+      #beat-5-ipad * {
+        box-sizing: border-box;
+      }
+
+      #beat-5-ipad .scene-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        padding: 62px 150px 126px;
+        gap: 28px;
+        overflow: hidden;
+      }
+
+      #beat-5-ipad .ambient {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      #beat-5-ipad .ambient-left {
+        width: 560px;
+        height: 560px;
+        left: -180px;
+        top: -220px;
+        background: radial-gradient(circle, rgba(239, 233, 251, 0.92) 0%, rgba(239, 233, 251, 0) 70%);
+      }
+
+      #beat-5-ipad .ambient-right {
+        width: 700px;
+        height: 700px;
+        right: -250px;
+        bottom: -360px;
+        background: radial-gradient(circle, rgba(111, 82, 181, 0.16) 0%, rgba(111, 82, 181, 0) 72%);
+      }
+
+      #beat-5-ipad .ghost-word {
+        position: absolute;
+        right: 84px;
+        top: 10px;
+        color: rgba(111, 82, 181, 0.06);
+        font-size: 152px;
+        font-weight: 850;
+        letter-spacing: -0.05em;
+        white-space: nowrap;
+        z-index: 0;
+      }
+
+      #beat-5-ipad .scene-heading {
+        position: relative;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        width: 100%;
+        z-index: 3;
+      }
+
+      #beat-5-ipad .scene-kicker {
+        color: #6f52b5;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+      }
+
+      #beat-5-ipad h1 {
+        margin: 0;
+        color: #251f2d;
+        font-size: 64px;
+        font-weight: 850;
+        letter-spacing: -0.045em;
+        line-height: 1;
+      }
+
+      #beat-5-ipad .browser-shell {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 1620px;
+        height: 856px;
+        overflow: hidden;
+        border: 2px solid #e7e1ec;
+        border-radius: 26px;
+        background-color: #fffaf4;
+        box-shadow: 0 34px 80px rgba(86, 59, 159, 0.18), 0 10px 26px rgba(37, 31, 45, 0.08);
+        z-index: 2;
+      }
+
+      #beat-5-ipad .browser-chrome {
+        display: grid;
+        grid-template-columns: 180px 1fr 180px;
+        align-items: center;
+        min-height: 56px;
+        padding: 0 24px;
+        border-bottom: 1px solid #e7e1ec;
+        background-color: #f8f5fb;
+      }
+
+      #beat-5-ipad .browser-controls {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+
+      #beat-5-ipad .browser-controls span {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background-color: #e7e1ec;
+      }
+
+      #beat-5-ipad .browser-controls span:nth-child(2) {
+        background-color: #efe9fb;
+      }
+
+      #beat-5-ipad .browser-controls span:nth-child(3) {
+        background-color: #3d8b6a;
+        opacity: 0.58;
+      }
+
+      #beat-5-ipad .browser-address {
+        justify-self: center;
+        min-width: 560px;
+        padding: 9px 28px;
+        border: 1px solid #e7e1ec;
+        border-radius: 999px;
+        color: #706879;
+        background-color: #fffaf4;
+        font-size: 17px;
+        font-weight: 650;
+        text-align: center;
+        letter-spacing: 0.03em;
+      }
+
+      #beat-5-ipad .browser-security {
+        justify-self: end;
+        color: #3d8b6a;
+        font-size: 17px;
+        font-weight: 750;
+      }
+
+      #beat-5-ipad .screen-viewport {
+        position: relative;
+        flex: 1;
+        overflow: hidden;
+        background-color: #fffaf4;
+      }
+
+      #beat-5-ipad .screen-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center top;
+      }
+
+      #beat-5-ipad .focus-ring {
+        position: absolute;
+        border: 3px solid #6f52b5;
+        border-radius: 18px;
+        background-color: rgba(239, 233, 251, 0.12);
+        box-shadow: 0 0 0 7px rgba(239, 233, 251, 0.56);
+        pointer-events: none;
+      }
+
+      #beat-5-ipad .quota-focus {
+        left: 28px;
+        top: 178px;
+        width: 390px;
+        height: 58px;
+      }
+
+      #beat-5-ipad .record-focus {
+        left: 30px;
+        top: 330px;
+        width: 985px;
+        height: 118px;
+      }
+
+      #beat-5-ipad .timer-focus {
+        left: 570px;
+        top: 387px;
+        width: 318px;
+        height: 54px;
+      }
+
+      #beat-5-ipad .callout {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 52px;
+        padding: 0 18px;
+        border: 1px solid #e7e1ec;
+        border-radius: 16px;
+        color: #563b9f;
+        background-color: #fffaf4;
+        box-shadow: 0 13px 30px rgba(86, 59, 159, 0.16);
+        z-index: 5;
+      }
+
+      #beat-5-ipad .callout-index {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        color: #fffaf4;
+        background-color: #6f52b5;
+        font-size: 16px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+      }
+
+      #beat-5-ipad .callout-copy {
+        font-size: 21px;
+        font-weight: 750;
+        white-space: nowrap;
+      }
+
+      #beat-5-ipad .callout-rule {
+        position: absolute;
+        width: 2px;
+        background-color: #6f52b5;
+        transform-origin: top center;
+      }
+
+      #beat-5-ipad .quota-callout {
+        left: 252px;
+        top: 78px;
+      }
+
+      #beat-5-ipad .quota-callout .callout-rule {
+        left: 54px;
+        top: 52px;
+        height: 88px;
+      }
+
+      #beat-5-ipad .record-callout {
+        left: 1038px;
+        top: 258px;
+      }
+
+      #beat-5-ipad .record-callout .callout-rule {
+        left: -118px;
+        top: 26px;
+        width: 118px;
+        height: 2px;
+        transform-origin: right center;
+      }
+
+      #beat-5-ipad .timer-card {
+        position: absolute;
+        right: 46px;
+        top: 82px;
+        display: grid;
+        grid-template-columns: auto auto auto;
+        align-items: baseline;
+        gap: 13px;
+        min-width: 400px;
+        padding: 20px 24px;
+        border: 1px solid #e7e1ec;
+        border-radius: 20px;
+        color: #563b9f;
+        background-color: #efe9fb;
+        box-shadow: 0 16px 36px rgba(86, 59, 159, 0.15);
+        z-index: 6;
+      }
+
+      #beat-5-ipad .timer-label,
+      #beat-5-ipad .timer-unit {
+        color: #706879;
+        font-size: 19px;
+        font-weight: 700;
+      }
+
+      #beat-5-ipad .timer-value {
+        min-width: 146px;
+        color: #563b9f;
+        font-size: 40px;
+        font-weight: 850;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+      }
+
+      #beat-5-ipad .overtime-chip {
+        position: absolute;
+        right: 74px;
+        top: 592px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        border: 2px solid #c33e53;
+        border-radius: 999px;
+        color: #9d2e43;
+        background-color: #fffaf4;
+        box-shadow: 0 16px 34px rgba(157, 46, 67, 0.17);
+        font-size: 21px;
+        font-weight: 750;
+        z-index: 7;
+      }
+
+      #beat-5-ipad .overtime-chip strong {
+        font-size: 27px;
+        font-weight: 850;
+        font-variant-numeric: tabular-nums;
+      }
+
+      #beat-5-ipad .overtime-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #c33e53;
+        box-shadow: 0 0 0 7px rgba(195, 62, 83, 0.12);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      const beat5 = gsap.timeline({ paused: true });
+      const beat5Counter = { minutes: 0 };
+      const beat5Timer = document.querySelector("#beat-5-ipad .timer-value");
+
+      beat5.fromTo(
+        "#beat-5-ipad .ambient-left",
+        { opacity: 0, scale: 0.82 },
+        { opacity: 1, scale: 1, duration: 1.35, ease: "sine.out" },
+        0.12
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .ambient-right",
+        { opacity: 0, scale: 0.72 },
+        { opacity: 1, scale: 1, duration: 1.7, ease: "power1.out" },
+        0.18
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .ghost-word",
+        { opacity: 0, x: 90 },
+        { opacity: 1, x: 0, duration: 1.15, ease: "expo.out" },
+        0.2
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .scene-kicker",
+        { opacity: 0, x: -46 },
+        { opacity: 1, x: 0, duration: 0.68, ease: "power3.out" },
+        0.24
+      );
+      beat5.fromTo(
+        "#beat-5-ipad h1",
+        { opacity: 0, y: 34 },
+        { opacity: 1, y: 0, duration: 0.82, ease: "circ.out" },
+        0.34
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .browser-shell",
+        { opacity: 0, x: 180, filter: "blur(12px)" },
+        { opacity: 1, x: 0, filter: "blur(0px)", duration: 1.0, ease: "power4.out" },
+        0.28
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .browser-controls span",
+        { opacity: 0, scale: 0.35 },
+        { opacity: 1, scale: 1, duration: 0.44, stagger: 0.08, ease: "back.out(1.5)" },
+        0.88
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .browser-address",
+        { opacity: 0, scaleX: 0.78 },
+        { opacity: 1, scaleX: 1, duration: 0.55, ease: "sine.out" },
+        0.96
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .browser-security",
+        { opacity: 0, x: 24 },
+        { opacity: 1, x: 0, duration: 0.46, ease: "power2.out" },
+        1.06
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .screen-image",
+        { opacity: 0, scale: 0.985 },
+        { opacity: 1, scale: 1.018, duration: 10.2, ease: "none" },
+        0.72
+      );
+
+      beat5.fromTo(
+        "#beat-5-ipad .quota-focus",
+        { opacity: 0, scale: 0.82 },
+        { opacity: 1, scale: 1, duration: 0.48, ease: "back.out(1.35)" },
+        1.68
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .quota-callout",
+        { opacity: 0, y: -28 },
+        { opacity: 1, y: 0, duration: 0.56, ease: "power3.out" },
+        1.83
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .quota-callout .callout-rule",
+        { scaleY: 0 },
+        { scaleY: 1, duration: 0.52, ease: "sine.inOut" },
+        2.08
+      );
+
+      beat5.fromTo(
+        "#beat-5-ipad .record-focus",
+        { opacity: 0, scaleX: 0.76 },
+        { opacity: 1, scaleX: 1, duration: 0.62, ease: "expo.out" },
+        3.0
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .record-callout",
+        { opacity: 0, x: 54 },
+        { opacity: 1, x: 0, duration: 0.58, ease: "circ.out" },
+        3.18
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .record-callout .callout-rule",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.56, ease: "power1.inOut" },
+        3.38
+      );
+
+      beat5.fromTo(
+        "#beat-5-ipad .timer-focus",
+        { opacity: 0, scale: 0.72 },
+        { opacity: 1, scale: 1, duration: 0.52, ease: "back.out(1.4)" },
+        4.36
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .timer-card",
+        { opacity: 0, y: -36, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.72, ease: "power4.out" },
+        4.48
+      );
+      beat5.to(
+        beat5Counter,
+        {
+          minutes: 62,
+          duration: 2.75,
+          ease: "power1.inOut",
+          onUpdate: function () {
+            const minuteValue = Math.floor(beat5Counter.minutes);
+            beat5Timer.textContent = String(minuteValue).padStart(2, "0") + ":00";
+          }
+        },
+        4.68
+      );
+      beat5.to(
+        "#beat-5-ipad .timer-card",
+        { backgroundColor: "#fffaf4", borderColor: "#c33e53", color: "#9d2e43", duration: 0.42, ease: "sine.inOut" },
+        7.05
+      );
+      beat5.to(
+        "#beat-5-ipad .timer-value",
+        { color: "#9d2e43", duration: 0.42, ease: "power2.out" },
+        7.05
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .overtime-chip",
+        { opacity: 0, x: 44, scale: 0.9 },
+        { opacity: 1, x: 0, scale: 1, duration: 0.68, ease: "back.out(1.45)" },
+        7.42
+      );
+      beat5.fromTo(
+        "#beat-5-ipad .overtime-dot",
+        { scale: 0.4 },
+        { scale: 1, duration: 0.36, ease: "expo.out" },
+        7.78
+      );
+      beat5.to(
+        "#beat-5-ipad .overtime-chip",
+        { y: -5, duration: 0.95, repeat: 2, yoyo: true, ease: "sine.inOut" },
+        8.3
+      );
+
+      window.__timelines["beat-5-ipad"] = beat5;
+    </script>
+  </div>
+</template>
