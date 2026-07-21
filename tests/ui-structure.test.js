@@ -617,10 +617,25 @@ test('product introduction page exposes the public landing structure', async () 
 
 test('product introduction page uses local accessible screenshots', async () => {
   const intro = await readFile(new URL('../intro.html', import.meta.url), 'utf8');
-  assert.match(intro, /href="intro\.css\?v=20260719-intro"/);
+  assert.match(intro, /href="intro\.css\?v=20260721-intro-video"/);
   for (const name of ['daily-calendar', 'task-completion', 'ipad-usage']) {
     assert.match(intro, new RegExp(`src="assets/intro/${name}\\.webp"[^>]+alt="[^"]+"[^>]+width="\\d+"[^>]+height="\\d+"`));
   }
+});
+
+test('intro product video teaches the desktop web workflow without autoplay', async () => {
+  const intro = await readFile(new URL('../intro.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../intro.css', import.meta.url), 'utf8');
+  assert.match(intro, /id="product-video"/);
+  assert.match(intro, /src="assets\/intro\/video\/product-tour\.mp4"/);
+  assert.match(intro, /poster="assets\/intro\/video\/product-tour-poster\.webp"/);
+  assert.match(intro, /src="assets\/intro\/video\/product-tour-zh\.vtt"/);
+  assert.match(intro, /<video[^>]*controls[^>]*playsinline[^>]*preload="metadata"/);
+  assert.doesNotMatch(intro, /<video[^>]*autoplay/);
+  assert.match(intro, /href="index\.html"[^>]*>立即开始使用<\/a>/);
+  assert.match(css, /\.intro-video-frame\s*\{[^}]*width:\s*min\(100%,\s*1040px\)/);
+  assert.match(css, /\.intro-video-frame video\s*\{[^}]*width:\s*100%[^}]*aspect-ratio:\s*16\s*\/\s*9/);
+  assert.match(css, /@media \(max-width: 600px\)[\s\S]*\.intro-video-actions\s*\{[^}]*flex-direction:\s*column/);
 });
 
 test('product introduction hero keeps its headline and screenshot inside the layout', async () => {
