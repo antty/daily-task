@@ -239,6 +239,18 @@ test('ipad page exposes the approved static parent-child agreement', async () =>
   assert.doesNotMatch(app, /open-ipad-agreement[\s\S]{0,240}getIpadState/);
 });
 
+test('ipad agreement uses a balanced header and responsive reading dialog', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+
+  assert.match(css, /\.ipad-page-head\s*\{[^}]*display:\s*grid[^}]*align-items:\s*center/);
+  assert.match(css, /\.ipad-agreement-entry\s*\{[^}]*width:\s*44px[^}]*height:\s*44px/);
+  assert.match(css, /\.ipad-agreement-dialog\s*\{[^}]*--dialog-width:\s*680px[^}]*overflow:\s*hidden/);
+  assert.match(css, /\.ipad-agreement-content\s*\{[^}]*overflow-y:\s*auto/);
+  assert.match(css, /\.ipad-agreement-table\s*\{[^}]*width:\s*100%[^}]*table-layout:\s*fixed/);
+  assert.match(css, /\.ipad-agreement-formula\s*\{[^}]*overflow-wrap:\s*anywhere/);
+  assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*\.ipad-page-head\s*\{[^}]*grid-template-columns:\s*44px minmax\(0,\s*1fr\) 44px/);
+});
+
 test('ipad view resets its independent selected date when a member is switched', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(app, /ipadSelectedDate: today/);

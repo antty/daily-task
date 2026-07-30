@@ -93,6 +93,18 @@
   max-width: none;
 }
 
+.ipad-page-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 10px;
+}
+
+.ipad-page-title {
+  min-width: 0;
+  grid-column: 1;
+}
+
 .ipad-mobile-back {
   display: none;
   width: 32px;
@@ -105,6 +117,134 @@
   font-size: 18px;
   line-height: 1;
   box-shadow: 0 3px 8px #2b16300a;
+}
+
+.ipad-agreement-entry {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  grid-column: 2;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+
+.ipad-agreement-entry:hover {
+  border-color: #cbbbe3;
+  background: var(--color-surface-soft);
+}
+
+.ipad-agreement-entry svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ipad-agreement-dialog {
+  --dialog-width: 680px;
+  overflow: hidden;
+}
+
+.ipad-agreement-dialog > .dialog-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.ipad-agreement-content {
+  max-height: calc(88dvh - 82px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  line-height: 1.75;
+}
+
+.ipad-agreement-content section {
+  display: grid;
+  gap: 10px;
+}
+
+.ipad-agreement-content h3 {
+  margin: 6px 0 0;
+  color: var(--color-foreground);
+  font-size: 16px;
+}
+
+.ipad-agreement-content p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.ipad-agreement-content ol,
+.ipad-agreement-content ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+.ipad-agreement-lead {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--color-surface-soft);
+}
+
+.ipad-agreement-formula {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 12px 12px 0;
+  background: #f6f1fc;
+  overflow-wrap: anywhere;
+}
+
+.ipad-agreement-formula strong {
+  color: var(--color-primary-strong);
+}
+
+.ipad-agreement-note {
+  font-size: 12px;
+}
+
+.ipad-agreement-table {
+  width: 100%;
+  table-layout: fixed;
+  border: 1px solid var(--color-border);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+.ipad-agreement-table th,
+.ipad-agreement-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.ipad-agreement-table th {
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+.ipad-agreement-table th:first-child,
+.ipad-agreement-table td:first-child {
+  width: 34%;
+}
+
+.ipad-agreement-table tr:last-child td {
+  border-bottom: 0;
 }
 
 .ipad-content-layout {
@@ -336,6 +476,21 @@
     height: 30px;
     font-size: 13px;
   }
+
+  .ipad-agreement-content {
+    max-height: calc(100dvh - 106px - env(safe-area-inset-bottom));
+  }
+
+  .ipad-agreement-table th,
+  .ipad-agreement-table td {
+    padding: 9px 8px;
+    font-size: 12px;
+  }
+
+  .ipad-agreement-table th:first-child,
+  .ipad-agreement-table td:first-child {
+    width: 38%;
+  }
 }
 
 @media (max-width: 760px) {
@@ -350,17 +505,17 @@
   .ipad-page-head {
     display: grid;
     align-items: center;
-    grid-template-columns: 32px 1fr 32px;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
     margin-bottom: 18px;
   }
 
-  .ipad-page-head > div {
+  .ipad-page-title {
     grid-column: 2;
     text-align: center;
   }
 
   .ipad-page-head::after {
-    content: '';
+    display: none;
   }
 
   .ipad-mobile-back {
@@ -368,6 +523,11 @@
     align-items: center;
     justify-content: center;
     grid-column: 1;
+    grid-row: 1;
+  }
+
+  .ipad-agreement-entry {
+    grid-column: 3;
     grid-row: 1;
   }
 
