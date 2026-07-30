@@ -34,7 +34,13 @@
     </dialog>
     <section id="ipad-view" hidden>
       <section class="panel ipad-page-panel">
-        <div class="ipad-page-head"><button id="close-ipad-page" class="text-button ipad-mobile-back" aria-label="返回任务" title="返回任务"><span aria-hidden="true">←</span></button><div><h2>iPad 使用管理</h2></div></div>
+        <div class="ipad-page-head">
+          <button id="close-ipad-page" class="text-button ipad-mobile-back" aria-label="返回任务" title="返回任务"><span aria-hidden="true">←</span></button>
+          <div class="ipad-page-title"><h2>iPad 使用管理</h2></div>
+          <button id="open-ipad-agreement" class="text-button ipad-agreement-entry" aria-label="查看 iPad 使用协议" title="查看使用协议">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3.75h7.5L18 7.25V20.25H7z"></path><path d="M14.5 3.75v3.5H18M9.75 11h5.5M9.75 14.5h5.5"></path></svg>
+          </button>
+        </div>
         <section id="ipad-limit-options"><p>先创建今天的使用额度</p><small>额度是今天所有计入时长的使用记录的父任务。</small><div><button data-ipad-limit="60">60 分钟</button><button data-ipad-limit="120">120 分钟</button><button data-ipad-limit="180">180 分钟</button><button data-ipad-limit="185">185 分钟</button><label>自定义<input id="ipad-custom-limit" type="number" min="1" max="600" placeholder="分钟"></label><button id="save-ipad-custom-limit">创建</button></div></section>
         <section id="ipad-summary" hidden></section>
         <div class="ipad-tools"><button id="open-ipad-type-dialog" class="text-button">使用类型管理</button><button id="open-ipad-entry-dialog" class="primary">+ 添加使用记录</button></div>
@@ -55,6 +61,59 @@
   <dialog id="member-switch-dialog" class="manager-dialog member-switch-dialog"><div class="dialog-head"><div><h2>切换家人</h2></div><button class="text-button" data-close-dialog="member-switch-dialog">关闭</button></div><p>选择后仅切换当前日历和任务视图。</p><div id="member-switch-list" class="member-switch-list"></div></dialog>
   <dialog id="ipad-entry-dialog" class="manager-dialog"><div class="dialog-head"><h2>添加使用记录</h2><button class="text-button" data-close-dialog="ipad-entry-dialog">关闭</button></div><form id="ipad-entry-form"><input name="title" placeholder="使用内容（选填）"><label>使用类型<select id="ipad-entry-type" name="typeId" required><option value="">请选择使用类型</option></select></label><p id="ipad-entry-type-error" class="form-error" hidden>请选择使用类型。</p><button class="primary">开始计时</button></form></dialog>
   <dialog id="ipad-completion-dialog" class="manager-dialog"><div class="dialog-head"><div><h2>结束这次使用</h2></div><button class="text-button" data-close-dialog="ipad-completion-dialog">取消</button></div><form id="ipad-completion-form"><textarea name="ipad-completion-note" placeholder="补充本次使用说明（选填）"></textarea><div class="task-form-actions"><button class="text-button" type="button" data-close-dialog="ipad-completion-dialog">暂不填写</button><button class="primary">完成并保存</button></div></form></dialog>
+  <dialog id="ipad-agreement-dialog" class="manager-dialog ipad-agreement-dialog">
+    <div class="dialog-head">
+      <div><p class="eyebrow">家庭约定</p><h2>每日 iPad 使用亲子协议</h2></div>
+      <button class="text-button dialog-close-icon" data-close-dialog="ipad-agreement-dialog" aria-label="关闭协议"><span aria-hidden="true">×</span></button>
+    </div>
+    <article class="dialog-body ipad-agreement-content">
+      <p class="ipad-agreement-lead">为了让 iPad 成为学习和娱乐的好帮手，也为了保护眼睛、保证作息、培养自律和健康习惯，我们一起订立以下约定。</p>
+      <section>
+        <h3>使用约定</h3>
+        <ol>
+          <li>iPad 平时由家长保管，小朋友不能自行取用。</li>
+          <li>每次使用 iPad，必须在吃完饭 30 分钟后才能开始。</li>
+          <li>每次开始使用 iPad 时，需要在系统中登记开始时间。</li>
+          <li>到达约定使用时间后，小朋友应主动停止使用，并将 iPad 交还给家长。</li>
+          <li>如果当日累计计入时长超过约定时间，则按照以下规则处理。</li>
+        </ol>
+      </section>
+      <section>
+        <h3>正常使用超时处理规则</h3>
+        <table class="ipad-agreement-table">
+          <thead><tr><th scope="col">超时时长</th><th scope="col">处理方式</th></tr></thead>
+          <tbody>
+            <tr><td>超时 1–60 分钟</td><td>记录违规 1 次；累计违规超过 3 次，暂停使用 1 天</td></tr>
+            <tr><td>超时 61–120 分钟</td><td>暂停使用 2 天</td></tr>
+            <tr><td>超时超过 120 分钟</td><td>暂停使用 1 周</td></tr>
+          </tbody>
+        </table>
+      </section>
+      <section>
+        <h3>未经允许使用的处罚规则</h3>
+        <p>未经家长允许使用 iPad 时，根据未经允许使用的时长进行阶梯处理。</p>
+        <p class="ipad-agreement-formula"><strong>未经允许使用时长</strong><span>iPad 系统记录的当日使用总时长 − 习惯养成系统当日登记的使用时长</span></p>
+        <p class="ipad-agreement-note">如果计算结果小于 0，则按 0 分钟计算。</p>
+        <table class="ipad-agreement-table">
+          <thead><tr><th scope="col">未经允许使用时长</th><th scope="col">处理方式</th></tr></thead>
+          <tbody>
+            <tr><td>1–9 分钟</td><td>进行提醒，不记录违规次数</td></tr>
+            <tr><td>10–60 分钟</td><td>暂停使用 1 天</td></tr>
+            <tr><td>61–120 分钟</td><td>暂停使用 2 天</td></tr>
+            <tr><td>超过 120 分钟</td><td>暂停使用 1 周</td></tr>
+          </tbody>
+        </table>
+      </section>
+      <section>
+        <h3>补充说明</h3>
+        <ul>
+          <li>家长应公平、稳定地保管和交接 iPad，并协助记录使用时间。</li>
+          <li>如果遇到外出、假期或学习任务等特殊情况，可由家长和小朋友提前商量，临时调整。</li>
+          <li>本协议不是为了惩罚，而是为了帮助小朋友学会安排时间、遵守约定和保护身体。</li>
+        </ul>
+      </section>
+    </article>
+  </dialog>
   <dialog id="ipad-type-password-dialog" class="manager-dialog password-dialog"><div class="dialog-head"><div><h2>验证管理身份</h2><p>请输入家庭管理密码后管理使用类型。</p></div><button class="text-button dialog-close-icon" data-close-dialog="ipad-type-password-dialog" aria-label="关闭"><span aria-hidden="true">×</span></button></div><form id="ipad-type-password-form" class="dialog-body"><label class="form-field"><span class="field-label">管理密码</span><span class="password-field"><input name="password" type="password" inputmode="numeric" autocomplete="current-password" required autofocus><button type="button" class="password-toggle" data-password-toggle aria-label="显示密码">显示</button></span></label><p id="ipad-type-password-error" class="form-error" role="alert" hidden>密码不正确，请重试。</p><div class="dialog-footer"><button class="text-button" type="button" data-close-dialog="ipad-type-password-dialog">取消</button><button class="primary">进入使用类型管理</button></div></form></dialog>
   <dialog id="ipad-type-dialog" class="manager-dialog"><div class="dialog-head"><div><h2>使用类型管理</h2></div><button class="text-button" data-close-dialog="ipad-type-dialog">关闭</button></div><form id="ipad-type-form"><input name="name" placeholder="例如：学习、游戏" required><label class="ipad-count-rule"><input name="counts" type="checkbox" checked><span>计入每日额度<small>关闭后仅记录使用时段，不参与超时统计。</small></span></label><button class="secondary">添加类型</button></form><div id="ipad-type-list" class="manage-list"></div></dialog>
   <dialog id="member-avatar-dialog" class="manager-dialog avatar-editor-dialog"><div class="dialog-head"><div><h2>修改头像</h2></div><button class="text-button" data-close-dialog="member-avatar-dialog">关闭</button></div><form id="member-avatar-form"><img id="member-avatar-preview" alt="成员头像预览" hidden><label class="avatar-upload">选择新的头像<input name="member-avatar" type="file" accept="image/*"></label><div class="task-form-actions"><button class="text-button" type="button" data-close-dialog="member-avatar-dialog">取消</button><button class="primary">保存头像</button></div></form></dialog>
