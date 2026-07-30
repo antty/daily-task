@@ -395,12 +395,12 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260720-family-rpc"/);
+  assert.match(html, /src="src\/app\.js\?v=20260730-ipad-agreement"/);
 });
 
 test('the browser entry module loads the Supabase store at the current release version', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
-  assert.match(app, /from '\.\/supabase-store\.js\?v=20260720-family-rpc'/);
+  assert.match(app, /from '\.\/supabase-store\.js\?v=20260730-ipad-agreement'/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -410,7 +410,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260720-family-rpc']);
+  assert.deepEqual([...new Set(versions)], ['20260730-ipad-agreement']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -446,8 +446,8 @@ test('README documents password migration and the 185-minute preset', async () =
 test('mobile ipad view hides home navigation and centers its own heading', async () => {
   const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
   assert.match(css, /body:has\(#ipad-view:not\(\[hidden\]\)\) \.home-bar/);
-  assert.match(css, /\.ipad-page-head > div\s*\{[^}]*text-align:\s*center/);
-  assert.match(css, /grid-template-columns:\s*32px 1fr 32px/);
+  assert.match(css, /\.ipad-page-title\s*\{[^}]*text-align:\s*center/);
+  assert.match(css, /grid-template-columns:\s*44px minmax\(0,\s*1fr\) 44px/);
 });
 
 test('active ipad timer occupies its own prominent wrapped row', async () => {
@@ -596,7 +596,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260720-family-rpc');
+  assert.equal(versions[0], '20260730-ipad-agreement');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
