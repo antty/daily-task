@@ -216,6 +216,29 @@ test('ipad management collects a required type and completion note', async () =>
   assert.match(app, /getIpadDayStatus/);
 });
 
+test('ipad page exposes the approved static parent-child agreement', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const agreement = html.match(/<dialog id="ipad-agreement-dialog"[\s\S]*?<\/dialog>/)?.[0] || '';
+  const agreementRules = agreement.match(/<ol>[\s\S]*?<\/ol>/)?.[0] || '';
+
+  assert.match(html, /id="open-ipad-agreement"[^>]*aria-label="查看 iPad 使用协议"[\s\S]*?<svg[^>]*aria-hidden="true"/);
+  assert.match(agreement, /<h2>每日 iPad 使用亲子协议<\/h2>/);
+  assert.match(agreement, /为了让 iPad 成为学习和娱乐的好帮手/);
+  assert.equal((agreementRules.match(/<li>/g) || []).length, 5);
+  assert.match(agreement, /正常使用超时处理规则/);
+  assert.match(agreement, /未经允许使用的处罚规则/);
+  assert.match(agreement, /1–60 分钟/);
+  assert.match(agreement, /61–120 分钟/);
+  assert.match(agreement, /1–9 分钟/);
+  assert.match(agreement, /10–60 分钟/);
+  assert.match(agreement, /不记录违规次数/);
+  assert.match(agreement, /iPad 系统记录的当日使用总时长 − 习惯养成系统当日登记的使用时长/);
+  assert.match(agreement, /计算结果小于 0，则按 0 分钟计算/);
+  assert.doesNotMatch(agreement, /暂停使用 iPad 3 天/);
+  assert.match(app, /\$\('#open-ipad-agreement'\)\.onclick = \(\) => \$\('#ipad-agreement-dialog'\)\.showModal\(\)/);
+  assert.doesNotMatch(app, /open-ipad-agreement[\s\S]{0,240}getIpadState/);
+});
+
 test('ipad view resets its independent selected date when a member is switched', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   assert.match(app, /ipadSelectedDate: today/);
