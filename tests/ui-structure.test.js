@@ -201,7 +201,7 @@ test('calendar provides a separate family switcher when more than one member exi
 test('ipad management collects a required type and completion note', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   const entryDialog = html.match(/<dialog id="ipad-entry-dialog"[\s\S]*?<\/dialog>/)?.[0] || '';
-  assert.match(html, /id="open-ipad-manager"/);
+  assert.match(html, /id="workspace-tab-ipad"/);
   assert.match(html, /id="ipad-view"/);
   assert.match(html, /id="ipad-limit-options"/);
   assert.match(html, /id="ipad-calendar-grid"/);
@@ -243,14 +243,15 @@ test('ipad page exposes the approved static parent-child agreement', async () =>
 
 test('ipad agreement uses a balanced header and responsive reading dialog', async () => {
   const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  const workspaceCss = await readFile(new URL('../workspace-tabs.css', import.meta.url), 'utf8');
 
-  assert.match(css, /\.ipad-page-head\s*\{[^}]*display:\s*grid[^}]*align-items:\s*center/);
-  assert.match(css, /\.ipad-agreement-entry\s*\{[^}]*width:\s*44px[^}]*height:\s*44px/);
+  assert.match(html, /class="workspace-section-toolbar ipad-workspace-toolbar"/);
+  assert.match(workspaceCss, /#ipad-view \.ipad-agreement-entry\s*\{[^}]*height:\s*44px/);
+  assert.match(workspaceCss, /@media\s*\(max-width:\s*560px\)[\s\S]*\.workspace-action,[\s\S]*\.workspace-primary-action\s*\{[^}]*width:\s*44px/);
   assert.match(css, /\.ipad-agreement-dialog\s*\{[^}]*--dialog-width:\s*680px[^}]*overflow:\s*hidden/);
   assert.match(css, /\.ipad-agreement-content\s*\{[^}]*overflow-y:\s*auto/);
   assert.match(css, /\.ipad-agreement-table\s*\{[^}]*width:\s*100%[^}]*table-layout:\s*fixed/);
   assert.match(css, /\.ipad-agreement-formula\s*\{[^}]*overflow-wrap:\s*anywhere/);
-  assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*\.ipad-page-head\s*\{[^}]*grid-template-columns:\s*44px minmax\(0,\s*1fr\) 44px/);
 });
 
 test('ipad view resets its independent selected date when a member is switched', async () => {
@@ -349,9 +350,18 @@ test('ipad page uses a wide two-column workspace for records and calendar', asyn
   assert.match(css, /\.ipad-content-layout\s*\{[^}]*grid-template-columns:/);
 });
 
-test('ipad manager opens a fresh versioned standalone page', async () => {
+test('task and ipad tools share one accessible tab workspace', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
-  assert.match(app, /ipadMember=\$\{encodeURIComponent\(state\.memberId\)\}&v=/);
+  assert.match(html, /role="tablist"[^>]*aria-label="功能切换"/);
+  assert.match(html, /id="workspace-tab-tasks"[^>]*role="tab"[^>]*aria-controls="home-view"/);
+  assert.match(html, /id="workspace-tab-ipad"[^>]*role="tab"[^>]*aria-controls="ipad-view"/);
+  assert.match(html, /id="home-view"[^>]*role="tabpanel"[^>]*aria-labelledby="workspace-tab-tasks"/);
+  assert.match(html, /id="ipad-view"[^>]*role="tabpanel"[^>]*aria-labelledby="workspace-tab-ipad"/);
+  assert.match(app, /let activeWorkspace = ipadPageMemberId \? 'ipad' : 'tasks'/);
+  assert.match(app, /function showWorkspace\(workspace\)/);
+  assert.match(app, /activeWorkspace = workspace === 'ipad' \? 'ipad' : 'tasks'/);
+  assert.doesNotMatch(app, /window\.open\(url, '_blank'\)/);
+  assert.doesNotMatch(app, /location\.assign\(url\)/);
 });
 
 test('non-counting ipad usage types have a distinct record marker', async () => {
@@ -379,15 +389,12 @@ test('uploads compress images before converting them to data URLs', async () => 
   assert.doesNotMatch(app, /1\.5MB/);
 });
 
-test('mobile ipad management stays in the current page and exposes a return action', async () => {
+test('mobile ipad management stays in the shared tab page without a return action', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
-  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
-  assert.match(html, /id="close-ipad-page"/);
-  assert.match(app, /matchMedia\('\(max-width: 760px\)'\)/);
-  assert.match(app, /history\.back\(\)/);
-  assert.match(css, /\.ipad-mobile-back/);
-  assert.match(html, /id="close-ipad-page"[^>]*aria-label="返回任务"/);
-  assert.match(css, /\.ipad-mobile-back\s*\{[^}]*border-radius:\s*50%/);
+  assert.doesNotMatch(html, /id="close-ipad-page"/);
+  assert.doesNotMatch(app, /history\.back\(\)/);
+  assert.match(app, /\$\('#workspace-tab-ipad'\)\.onclick = \(\) => showWorkspace\('ipad'\)/);
+  assert.match(app, /\$\('#workspace-tab-tasks'\)\.onclick = \(\) => showWorkspace\('tasks'\)/);
 });
 
 test('static assets use a release version to prevent stale mobile styles', () => {
@@ -397,12 +404,12 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260730-ipad-agreement"/);
+  assert.match(html, /src="src\/app\.js\?v=20260730-unified-tabs"/);
 });
 
 test('the browser entry module loads the Supabase store at the current release version', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
-  assert.match(app, /from '\.\/supabase-store\.js\?v=20260730-ipad-agreement'/);
+  assert.match(app, /from '\.\/supabase-store\.js\?v=20260730-unified-tabs'/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -412,7 +419,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260730-ipad-agreement']);
+  assert.deepEqual([...new Set(versions)], ['20260730-unified-tabs']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -445,11 +452,18 @@ test('README documents password migration and the 185-minute preset', async () =
   assert.match(readme, /6–12 位数字/);
 });
 
-test('mobile ipad view hides home navigation and centers its own heading', async () => {
-  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
-  assert.match(css, /body:has\(#ipad-view:not\(\[hidden\]\)\) \.home-bar/);
-  assert.match(css, /\.ipad-page-title\s*\{[^}]*text-align:\s*center/);
-  assert.match(css, /grid-template-columns:\s*44px minmax\(0,\s*1fr\) 44px/);
+test('workspace navigation separates tabs from motivation and adapts to phones', async () => {
+  const css = await readFile(new URL('../workspace-tabs.css', import.meta.url), 'utf8').catch(() => '');
+  const header = html.match(/<header class="home-bar"[\s\S]*?<\/header>/)?.[0] || '';
+  assert.match(html, /href="workspace-tabs\.css\?v=20260730-unified-tabs"/);
+  assert.match(header, /class="workspace-tabs"/);
+  assert.doesNotMatch(header, /id="daily-motivation"/);
+  assert.match(html, /<\/header>\s*<section id="daily-motivation"/);
+  assert.match(css, /\.workspace-tabs\s*\{[^}]*display:\s*flex/);
+  assert.match(css, /\.workspace-tab\s*\{[^}]*min-height:\s*44px/);
+  assert.match(css, /@media\s*\(max-width:\s*900px\)/);
+  assert.match(css, /@media\s*\(max-width:\s*560px\)/);
+  assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
 });
 
 test('active ipad timer occupies its own prominent wrapped row', async () => {
@@ -483,10 +497,17 @@ test('completed ipad time fields use spaced punctuation separators', async () =>
   assert.match(css, /\.ipad-record-time \.ipad-duration::before/);
 });
 
-test('small screens keep family switching and task management on one row', async () => {
-  const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
-  assert.match(css, /@media\(max-width:600px\)\{\.home-bar \.header-actions\{[^}]*flex-direction:row/);
-  assert.match(css, /\.home-bar \.header-actions \.text-button\{[^}]*white-space:nowrap/);
+test('task and ipad actions belong to their corresponding workspace', () => {
+  const taskWorkspace = html.match(/<section id="home-view"[\s\S]*?<dialog id="manage-view"/)?.[0] || '';
+  const ipadWorkspace = html.match(/<section id="ipad-view"[\s\S]*?<\/main>/)?.[0] || '';
+  const header = html.match(/<header class="home-bar"[\s\S]*?<\/header>/)?.[0] || '';
+  assert.match(taskWorkspace, /id="open-manage"/);
+  assert.match(taskWorkspace, /id="open-task-dialog-home"/);
+  assert.doesNotMatch(header, /id="open-manage"/);
+  assert.doesNotMatch(header, /id="open-ipad-manager"/);
+  assert.match(ipadWorkspace, /id="open-ipad-agreement"/);
+  assert.match(ipadWorkspace, /id="open-ipad-type-dialog"/);
+  assert.match(ipadWorkspace, /id="open-ipad-entry-dialog"/);
 });
 
 test('touching buttons does not leave a browser-default selected outline', async () => {
@@ -566,12 +587,14 @@ test('lavender design tokens and accessible motion rules are present', async () 
 });
 
 test('home navigation uses accessible svg icons and responsive hierarchy', async () => {
-  const css = await readFile(new URL('../extras-3.css', import.meta.url), 'utf8');
-  assert.match(html, /id="open-ipad-manager"[\s\S]*?<svg[^>]*aria-hidden="true"/);
+  const css = await readFile(new URL('../workspace-tabs.css', import.meta.url), 'utf8').catch(() => '');
+  assert.match(html, /id="workspace-tab-tasks"[\s\S]*?<svg[^>]*aria-hidden="true"/);
+  assert.match(html, /id="workspace-tab-ipad"[\s\S]*?<svg[^>]*aria-hidden="true"/);
   assert.match(html, /id="open-manage"[\s\S]*?<svg[^>]*aria-hidden="true"/);
   assert.doesNotMatch(html, /<span aria-hidden="true">(?:◷|⇄|☷)<\/span>/);
   assert.match(css, /\.home-bar\s*\{[^}]*grid-template-columns:/);
-  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*\.home-layout\s*\{[^}]*grid-template-columns:\s*1fr/);
+  assert.match(css, /@media\s*\(max-width:\s*900px\)[\s\S]*\.workspace-tabs\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/);
+  assert.match(css, /@media\s*\(max-width:\s*560px\)[\s\S]*\.workspace-tab\s*\{[^}]*min-height:\s*44px/);
 });
 
 test('dialogs share labeled fields, accessible close controls, and mobile sheets', async () => {
@@ -598,7 +621,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260730-ipad-agreement');
+  assert.equal(versions[0], '20260730-unified-tabs');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {

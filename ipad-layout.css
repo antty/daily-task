@@ -494,43 +494,6 @@
 }
 
 @media (max-width: 760px) {
-  body:has(#ipad-view:not([hidden])) .home-bar {
-    display: none;
-  }
-
-  body:has(#ipad-view:not([hidden])) main {
-    padding-top: 20px;
-  }
-
-  .ipad-page-head {
-    display: grid;
-    align-items: center;
-    grid-template-columns: 44px minmax(0, 1fr) 44px;
-    margin-bottom: 18px;
-  }
-
-  .ipad-page-title {
-    grid-column: 2;
-    text-align: center;
-  }
-
-  .ipad-page-head::after {
-    display: none;
-  }
-
-  .ipad-mobile-back {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .ipad-agreement-entry {
-    grid-column: 3;
-    grid-row: 1;
-  }
-
   .ipad-page-panel {
     width: 100%;
     max-width: none;

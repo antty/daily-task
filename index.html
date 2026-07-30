@@ -4,25 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>习惯养成</title>
-  <link rel="stylesheet" href="styles.css?v=20260730-ipad-agreement">
-  <link rel="stylesheet" href="extras.css?v=20260730-ipad-agreement">
-  <link rel="stylesheet" href="extras-3.css?v=20260730-ipad-agreement">
-  <link rel="stylesheet" href="interaction.css?v=20260730-ipad-agreement">
-  <link rel="stylesheet" href="ipad.css?v=20260730-ipad-agreement">
-  <link rel="stylesheet" href="ipad-layout.css?v=20260730-ipad-agreement">
+  <link rel="stylesheet" href="styles.css?v=20260730-unified-tabs">
+  <link rel="stylesheet" href="extras.css?v=20260730-unified-tabs">
+  <link rel="stylesheet" href="extras-3.css?v=20260730-unified-tabs">
+  <link rel="stylesheet" href="interaction.css?v=20260730-unified-tabs">
+  <link rel="stylesheet" href="ipad.css?v=20260730-unified-tabs">
+  <link rel="stylesheet" href="ipad-layout.css?v=20260730-unified-tabs">
+  <link rel="stylesheet" href="workspace-tabs.css?v=20260730-unified-tabs">
 </head>
 <body>
   <main>
     <header class="home-bar">
       <div class="member-profile" aria-label="当前成员"><span id="member-avatar" class="member-avatar">我</span><span><strong id="member-name">我</strong></span></div>
-      <section id="daily-motivation" class="motivation inline-motivation"><div><h2 id="motivation-text"></h2><p id="motivation-note"></p></div></section>
+      <nav class="workspace-tabs" role="tablist" aria-label="功能切换">
+        <button id="workspace-tab-tasks" class="workspace-tab" type="button" role="tab" aria-controls="home-view" aria-selected="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6h11M9 12h11M9 18h11M4 6l1.4 1.4L7.8 5M4 12l1.4 1.4L7.8 11M4 18l1.4 1.4L7.8 17"></path></svg>
+          <span>任务打卡</span>
+        </button>
+        <button id="workspace-tab-ipad" class="workspace-tab" type="button" role="tab" aria-controls="ipad-view" aria-selected="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="3"></rect><path d="M10 7h4M12 17h.01"></path></svg>
+          <span>iPad 使用</span>
+        </button>
+      </nav>
       <div class="header-actions">
-        <button id="open-ipad-manager" class="text-button icon-entry ipad-entry" aria-label="iPad 使用管理" title="iPad 使用管理"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="3" width="16" height="18" rx="3"></rect><path d="M9 7h6M12 15v-4l2 1.5"></path><circle cx="12" cy="15" r="4"></circle></svg></button>
         <button id="open-member-switch" class="text-button member-switch-entry icon-entry" aria-label="切换家人" title="切换家人" hidden><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h11l-3-3M17 17H6l3 3"></path><path d="M18 7l-3 3M6 17l3-3"></path></svg></button>
-        <button id="open-manage" class="text-button manage-entry icon-entry" aria-label="管理任务" title="管理任务"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg></button>
       </div>
     </header>
-    <section id="home-view" hidden>
+    <section id="daily-motivation" class="motivation inline-motivation workspace-motivation"><div><h2 id="motivation-text"></h2><p id="motivation-note"></p></div></section>
+    <section id="home-view" role="tabpanel" aria-labelledby="workspace-tab-tasks" hidden>
+      <div class="workspace-section-toolbar">
+        <div class="workspace-section-title"><small>今日计划</small><h1>任务打卡</h1></div>
+        <div class="workspace-section-actions">
+          <button id="open-manage" class="text-button workspace-action" aria-label="管理任务" title="管理任务"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg><span>任务管理</span></button>
+          <button id="open-task-dialog-home" class="primary workspace-primary-action"><span aria-hidden="true">＋</span><span>添加任务</span></button>
+        </div>
+      </div>
       <div class="home-layout compact-home">
         <section class="panel calendar"><div class="calendar-head"><button id="prev-month" aria-label="上个月">‹</button><h2 id="calendar-title"></h2><button id="next-month" aria-label="下个月">›</button></div><div class="weekdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div id="calendar-grid" class="calendar-grid"></div></section>
         <section class="panel tasks"><div class="section-head"><div><h2 id="today-label"></h2><span id="task-count"></span></div></div><div id="task-list"></div></section>
@@ -32,18 +48,20 @@
       <div class="manage-top"><h2>任务列表</h2><div class="manage-top-actions"><button id="open-type-dialog" class="text-button type-manage-entry">任务类型管理</button><button id="open-task-dialog" class="primary mini-primary">+ 添加任务</button><button class="text-button dialog-close-icon" data-close-dialog="manage-view" aria-label="关闭任务管理" title="关闭"><span aria-hidden="true">×</span></button></div></div>
       <section class="panel managed-tasks"><div id="managed-task-list"></div></section>
     </dialog>
-    <section id="ipad-view" hidden>
+    <section id="ipad-view" role="tabpanel" aria-labelledby="workspace-tab-ipad" hidden>
       <section class="panel ipad-page-panel">
-        <div class="ipad-page-head">
-          <button id="close-ipad-page" class="text-button ipad-mobile-back" aria-label="返回任务" title="返回任务"><span aria-hidden="true">←</span></button>
-          <div class="ipad-page-title"><h2>iPad 使用管理</h2></div>
-          <button id="open-ipad-agreement" class="text-button ipad-agreement-entry" aria-label="查看 iPad 使用协议" title="查看使用协议">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3.75h7.5L18 7.25V20.25H7z"></path><path d="M14.5 3.75v3.5H18M9.75 11h5.5M9.75 14.5h5.5"></path></svg>
-          </button>
+        <div class="workspace-section-toolbar ipad-workspace-toolbar">
+          <div class="workspace-section-title"><small>屏幕时间</small><h1>iPad 使用</h1></div>
+          <div class="workspace-section-actions">
+            <button id="open-ipad-agreement" class="text-button workspace-action ipad-agreement-entry" aria-label="查看 iPad 使用协议" title="查看使用协议">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3.75h7.5L18 7.25V20.25H7z"></path><path d="M14.5 3.75v3.5H18M9.75 11h5.5M9.75 14.5h5.5"></path></svg><span>使用协议</span>
+            </button>
+            <button id="open-ipad-type-dialog" class="text-button workspace-action"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h10M4 12h16M4 17h12M17 5v4M8 10v4M15 15v4"></path></svg><span>类型管理</span></button>
+            <button id="open-ipad-entry-dialog" class="primary workspace-primary-action"><span aria-hidden="true">＋</span><span>添加使用记录</span></button>
+          </div>
         </div>
         <section id="ipad-limit-options"><p>先创建今天的使用额度</p><small>额度是今天所有计入时长的使用记录的父任务。</small><div><button data-ipad-limit="60">60 分钟</button><button data-ipad-limit="120">120 分钟</button><button data-ipad-limit="180">180 分钟</button><button data-ipad-limit="185">185 分钟</button><label>自定义<input id="ipad-custom-limit" type="number" min="1" max="600" placeholder="分钟"></label><button id="save-ipad-custom-limit">创建</button></div></section>
         <section id="ipad-summary" hidden></section>
-        <div class="ipad-tools"><button id="open-ipad-type-dialog" class="text-button">使用类型管理</button><button id="open-ipad-entry-dialog" class="primary">+ 添加使用记录</button></div>
         <div class="ipad-content-layout">
           <section class="ipad-record-section"><div class="ipad-record-heading"><h3 id="ipad-record-date"></h3></div><div id="ipad-entry-list"></div></section>
           <aside class="ipad-calendar-section"><div class="ipad-calendar-head"><strong>iPad 使用日历</strong></div><div id="ipad-calendar-grid" class="ipad-calendar-grid"></div></aside>
@@ -124,6 +142,6 @@
   <dialog id="task-detail-dialog" class="manager-dialog task-detail-dialog"><div class="dialog-head"><div><p class="eyebrow" id="task-detail-status">任务详情</p><h2 id="task-detail-title"></h2></div><button class="text-button" data-close-dialog="task-detail-dialog">关闭</button></div><div class="detail-meta" id="task-detail-meta"></div><p class="detail-description" id="task-detail-description" hidden></p><section class="detail-completion" id="task-detail-completion" hidden><h3>完成记录</h3><p id="task-detail-note" hidden></p><img id="task-detail-image" alt="完成照片" hidden></section></dialog>
   <dialog id="delete-dialog" class="manager-dialog delete-dialog"><h2>删除任务</h2><p>请选择删除范围。仅后续会保留今天之前的任务与完成记录。</p><div class="dialog-actions"><button id="delete-future" class="secondary">仅删除后续</button><button id="delete-all" class="danger-button">删除所有任务</button><button class="text-button" data-close-dialog="delete-dialog">取消</button></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="src/app.js?v=20260730-ipad-agreement"></script>
+  <script type="module" src="src/app.js?v=20260730-unified-tabs"></script>
 </body>
 </html>
