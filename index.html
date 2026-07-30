@@ -61,13 +61,13 @@
   <dialog id="member-switch-dialog" class="manager-dialog member-switch-dialog"><div class="dialog-head"><div><h2>切换家人</h2></div><button class="text-button" data-close-dialog="member-switch-dialog">关闭</button></div><p>选择后仅切换当前日历和任务视图。</p><div id="member-switch-list" class="member-switch-list"></div></dialog>
   <dialog id="ipad-entry-dialog" class="manager-dialog"><div class="dialog-head"><h2>添加使用记录</h2><button class="text-button" data-close-dialog="ipad-entry-dialog">关闭</button></div><form id="ipad-entry-form"><input name="title" placeholder="使用内容（选填）"><label>使用类型<select id="ipad-entry-type" name="typeId" required><option value="">请选择使用类型</option></select></label><p id="ipad-entry-type-error" class="form-error" hidden>请选择使用类型。</p><button class="primary">开始计时</button></form></dialog>
   <dialog id="ipad-completion-dialog" class="manager-dialog"><div class="dialog-head"><div><h2>结束这次使用</h2></div><button class="text-button" data-close-dialog="ipad-completion-dialog">取消</button></div><form id="ipad-completion-form"><textarea name="ipad-completion-note" placeholder="补充本次使用说明（选填）"></textarea><div class="task-form-actions"><button class="text-button" type="button" data-close-dialog="ipad-completion-dialog">暂不填写</button><button class="primary">完成并保存</button></div></form></dialog>
-  <dialog id="ipad-agreement-dialog" class="manager-dialog ipad-agreement-dialog">
+  <dialog id="ipad-agreement-dialog" class="manager-dialog ipad-agreement-dialog" aria-labelledby="ipad-agreement-title" aria-describedby="ipad-agreement-lead">
     <div class="dialog-head">
-      <div><p class="eyebrow">家庭约定</p><h2>每日 iPad 使用亲子协议</h2></div>
+      <div><p class="eyebrow">家庭约定</p><h2 id="ipad-agreement-title">每日 iPad 使用亲子协议</h2></div>
       <button class="text-button dialog-close-icon" data-close-dialog="ipad-agreement-dialog" aria-label="关闭协议"><span aria-hidden="true">×</span></button>
     </div>
     <article class="dialog-body ipad-agreement-content">
-      <p class="ipad-agreement-lead">为了让 iPad 成为学习和娱乐的好帮手，也为了保护眼睛、保证作息、培养自律和健康习惯，我们一起订立以下约定。</p>
+      <p id="ipad-agreement-lead" class="ipad-agreement-lead">为了让 iPad 成为学习和娱乐的好帮手，也为了保护眼睛、保证作息、培养自律和健康习惯，我们一起订立以下约定。</p>
       <section>
         <h3>使用约定</h3>
         <ol>

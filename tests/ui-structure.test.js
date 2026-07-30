@@ -222,8 +222,10 @@ test('ipad page exposes the approved static parent-child agreement', async () =>
   const agreementRules = agreement.match(/<ol>[\s\S]*?<\/ol>/)?.[0] || '';
 
   assert.match(html, /id="open-ipad-agreement"[^>]*aria-label="查看 iPad 使用协议"[\s\S]*?<svg[^>]*aria-hidden="true"/);
-  assert.match(agreement, /<h2>每日 iPad 使用亲子协议<\/h2>/);
-  assert.match(agreement, /为了让 iPad 成为学习和娱乐的好帮手/);
+  assert.match(agreement, /aria-labelledby="ipad-agreement-title"/);
+  assert.match(agreement, /aria-describedby="ipad-agreement-lead"/);
+  assert.match(agreement, /<h2 id="ipad-agreement-title">每日 iPad 使用亲子协议<\/h2>/);
+  assert.match(agreement, /id="ipad-agreement-lead"[^>]*>为了让 iPad 成为学习和娱乐的好帮手/);
   assert.equal((agreementRules.match(/<li>/g) || []).length, 5);
   assert.match(agreement, /正常使用超时处理规则/);
   assert.match(agreement, /未经允许使用的处罚规则/);
