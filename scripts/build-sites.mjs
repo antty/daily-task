@@ -2,7 +2,18 @@ import { cp, mkdir, rm, writeFile } from 'node:fs/promises';
 
 const output = new URL('../dist/', import.meta.url);
 const root = new URL('../', import.meta.url);
-const files = ['index.html', 'styles.css', 'extras.css', 'extras-3.css'];
+const files = [
+  'index.html',
+  'intro.html',
+  'styles.css',
+  'extras.css',
+  'extras-3.css',
+  'interaction.css',
+  'ipad.css',
+  'ipad-layout.css',
+  'workspace-tabs.css',
+  'intro.css',
+];
 const folders = ['src', 'assets'];
 
 await rm(output, { recursive: true, force: true });
