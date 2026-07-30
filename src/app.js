@@ -1,6 +1,6 @@
 import { buildOccurrences, getDaySummary, toDateKey } from './task-domain.js';
 import { getDailyUsageSummary, getIpadDayStatus, getUsageMinutes } from './ipad-domain.js';
-import { createSupabaseStore } from './supabase-store.js?v=20260730-unified-tabs';
+import { createSupabaseStore } from './supabase-store.js?v=20260730-ipad-summary-layout';
 import { validatePasswordChange } from './management-password.js';
 
 const store = createSupabaseStore();

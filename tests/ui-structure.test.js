@@ -404,12 +404,12 @@ test('static assets use a release version to prevent stale mobile styles', () =>
 });
 
 test('the browser entry script uses the current release version after a production fix', () => {
-  assert.match(html, /src="src\/app\.js\?v=20260730-unified-tabs"/);
+  assert.match(html, /src="src\/app\.js\?v=20260730-ipad-summary-layout"/);
 });
 
 test('the browser entry module loads the Supabase store at the current release version', async () => {
   const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
-  assert.match(app, /from '\.\/supabase-store\.js\?v=20260730-unified-tabs'/);
+  assert.match(app, /from '\.\/supabase-store\.js\?v=20260730-ipad-summary-layout'/);
 });
 
 test('ipad limit presets include 185 minutes', () => {
@@ -419,7 +419,7 @@ test('ipad limit presets include 185 minutes', () => {
 test('all frontend assets use the same release cache version', () => {
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.ok(versions.length >= 7);
-  assert.deepEqual([...new Set(versions)], ['20260730-unified-tabs']);
+  assert.deepEqual([...new Set(versions)], ['20260730-ipad-summary-layout']);
 });
 
 test('shared controls expose comfortable visual and touch sizing', async () => {
@@ -455,7 +455,7 @@ test('README documents password migration and the 185-minute preset', async () =
 test('workspace navigation separates tabs from motivation and adapts to phones', async () => {
   const css = await readFile(new URL('../workspace-tabs.css', import.meta.url), 'utf8').catch(() => '');
   const header = html.match(/<header class="home-bar"[\s\S]*?<\/header>/)?.[0] || '';
-  assert.match(html, /href="workspace-tabs\.css\?v=20260730-unified-tabs"/);
+  assert.match(html, /href="workspace-tabs\.css\?v=20260730-ipad-summary-layout"/);
   assert.match(header, /class="workspace-tabs"/);
   assert.doesNotMatch(header, /id="daily-motivation"/);
   assert.match(html, /<\/header>\s*<section id="daily-motivation"/);
@@ -621,7 +621,7 @@ test('lavender refresh uses one cache version across every frontend asset', asyn
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const versions = [...html.matchAll(/(?:href|src)="[^"]+\?v=([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(versions).size, 1);
-  assert.equal(versions[0], '20260730-unified-tabs');
+  assert.equal(versions[0], '20260730-ipad-summary-layout');
 });
 
 test('member dialogs retain compact scoped spacing in short and narrow viewports', async () => {
@@ -663,6 +663,13 @@ test('ipad overtime metric keeps the same card geometry as sibling metrics', asy
   const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
   assert.match(css, /\.ipad-metric\.ipad-summary-overtime\s*\{[^}]*margin-left:\s*0[^}]*border-radius:\s*15px/);
   assert.doesNotMatch(css, /\.ipad-metric\.ipad-summary-overtime\s*\{[^}]*border-radius:\s*999px/);
+});
+
+test('ipad remaining metric stretches to the same width as every summary card', async () => {
+  const css = await readFile(new URL('../ipad-layout.css', import.meta.url), 'utf8');
+  assert.match(css, /#ipad-summary\s*\{[^}]*grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)[^}]*margin-bottom:\s*18px/);
+  assert.match(css, /\.ipad-summary-remaining\s*\{[^}]*margin-left:\s*0/);
+  assert.doesNotMatch(css, /\.ipad-summary-remaining\s*\{[^}]*margin-left:\s*auto/);
 });
 
 test('product introduction page exposes the public landing structure', async () => {

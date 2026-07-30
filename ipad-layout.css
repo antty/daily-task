@@ -377,6 +377,7 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
+  margin-bottom: 18px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -436,7 +437,7 @@
 }
 
 .ipad-summary-remaining {
-  margin-left: auto;
+  margin-left: 0;
   font-weight: 700;
 }
 
